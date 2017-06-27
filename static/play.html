@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Play Webpage </title>
+</head>
+<body>
+
+<button onclick="play()">Play</button>
+<button onclick="pause()">Pause</button>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<script>
+    play = function() {
+        $.ajax('/play');
+    };
+    pause = function() {
+        $.ajax('/pause');
+    };
+</script>
+</body>
+</html>
