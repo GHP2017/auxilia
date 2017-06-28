@@ -7,7 +7,9 @@ app = Flask(__name__)
 client_id = 'f3b0c51df1124cc985fd4012b6d55d95'
 client_secret = 'e54ca2e0bf394944a1247830443dba3c'
 
-redirect_uri = 'http://127.0.0.1:5000/callback'
+#redirect_uri = 'http://127.0.0.1:5000/callback'
+redirect_uri = 'https://example-django-app-dude0faw3.c9users.io/callback'
+
 authorize_uri = 'https://accounts.spotify.com/authorize'
 token_uri = 'https://accounts.spotify.com/api/token'
 play_uri = 'https://api.spotify.com/v1/me/player/play'
@@ -46,7 +48,10 @@ def authenticate():
 
 @app.route("/add_song")
 def add_song():
-    pass
+    song = request.args.get('song')
+    print(http.put(play_uri, data={'uris': [song]},  
+        headers={'Authorization': 'Bearer ' + os.environ['TOKEN']}))
+    return 'success'
 
 
 
@@ -67,4 +72,7 @@ def pause():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(
+        host=os.getenv('HOST', '0.0.0.0'),
+        port=os.getenv('PORT', '5000')
+    )

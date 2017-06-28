@@ -15,10 +15,11 @@
   crossorigin="anonymous"></script>
 <script>
     play = function() {
-        $.ajax('/play');
+        song = 'spotify:track:4iV5W9uYEdYUVa79Axb7Rh';
+        $.ajax('/add_song' song)
     };
     pause = function() {
-        $.ajax('/resume');
+        $.ajax('/resume')
     };
 </script>
 </body>
