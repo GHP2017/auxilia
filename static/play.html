@@ -6,19 +6,19 @@
 </head>
 <body>
 
-<button onclick="play()">Play</button>
-<button onclick="resume()">Pause</button>
+<button onclick="resume()">Resume</button>
+<button onclick="pause()">Pause</button>
 
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
 <script>
-    play = function() {
-        $.ajax('/play');
+    resume = function() {
+        $.ajax('/resume');
     };
     pause = function() {
-        $.ajax('/resume');
+        $.ajax('/pause');
     };
 </script>
 </body>

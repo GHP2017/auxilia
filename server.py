@@ -48,9 +48,6 @@ def authenticate():
 def add_song():
     pass
 
-
-
-
 ## Playback Endpoints
 
 @app.route("/resume")
