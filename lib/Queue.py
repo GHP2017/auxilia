@@ -1,5 +1,4 @@
-import operator
-from SongClass import Song
+from lib.Song import Song
 
 class Queue:
 
@@ -9,14 +8,14 @@ class Queue:
 
     def addSong(self, song):
         self.queue.append(song)
-        sortSongs()
+        self.sortSongs()
 
     def getSong(self):
         song = self.queue.pop(0)
         self.played.append(song)
-        ageSongs()
-        calculateScore()
-        sortSongs()
+        self.ageSongs()
+        self.calculateScore()
+        self.sortSongs()
         return song
 
     def sortSongs(self):
@@ -28,3 +27,6 @@ class Queue:
     def ageSongs(self):
         for song in self.queue:
             song.age = song.age + 1
+
+    def serialize(self):
+        return [song.to_dict() for song in self.queue]
