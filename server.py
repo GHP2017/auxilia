@@ -2,7 +2,6 @@ from flask import Flask, redirect, request
 from flask_socketio import SocketIO, emit
 from lib.Queue import Queue
 from lib.Song import Song
-import os
 import requests as http
 import json
 from base64 import b64encode
@@ -23,9 +22,10 @@ token_uri = 'https://accounts.spotify.com/api/token'
 play_uri = 'https://api.spotify.com/v1/me/player/play'
 pause_uri = 'https://api.spotify.com/v1/me/player/pause'
 track_uri = 'https://api.spotify.com/v1/tracks/'
+search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
 
-code = ''
-token = ''
+access_token = ''
+refresh_token = ''
 
 ## OAUTH2 
 
@@ -41,12 +41,9 @@ def callback():
     })
     data = result.json()
     print(data)
-    token = data['access_token']
-    refresh = data['refresh_token']
-    print(token)
-
-    os.environ['REFRESH_TOKEN'] = refresh
-    os.environ['ACCESS_TOKEN'] = token
+    access_token = data['access_token']
+    refresh_token = data['refresh_token']
+    print(access_token)
 
     return redirect('/static/play.html')
     
@@ -85,6 +82,16 @@ def client_connected(data):
     print('a client connected')
     emit('queue_changed', queue.serialize())
 
+@socketio.on('searchbar_changed')
+def searchbar_changed(data):
+    print('searchbar changing...')
+    print('searching for {0}'.format(data))
+    response = get_request(search_uri + data.query)
+    songs = []
+    for track_obj in response.json()['tracks']['items']:
+        songs.append(create_song(track_obj))
+    emit('suggestions_changed', songs)
+
 def queue_change():
     socketio.emit('queue_changed', queue.serialize())
 
@@ -99,29 +106,29 @@ def create_song(track_id):
     track_artists = ','.join(artist['name'] for artist in data['artists'])
     album_uri = data['album']['images'][0]['url']
     album_name = data['album']['name']
-    return Song(track_name, track_id, track_artists, album_uri, album_name, False)
+    duration = data['duration_ms']
+    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, False)
 
 
 def get_request(url, call_type='GET', body=None):
-    print(os.environ['ACCESS_TOKEN'])
     print(url)
     if call_type is 'GET':
-        response = http.get(url, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
+        response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
         if int(response.status_code) >= 400:
             refresh_access_token()
-            response = http.get(url, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
+            response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'POST':
-        response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
+        response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
         print(response.text)
         if int(response.status_code) >= 400:
             refresh_access_token()
-            response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
+            response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'PUT':
-        response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
+        response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
         print(response.text, response.status_code)
         if int(response.status_code) >= 400:
             refresh_access_token()
-            response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
+            response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
 
     return response
 
@@ -129,7 +136,7 @@ def get_request(url, call_type='GET', body=None):
 def refresh_access_token():
     body = {
         'grant_type': 'refresh_token',
-        'refresh_token': os.environ['REFRESH_TOKEN']
+        'refresh_token': refresh_token
     }
     string = (client_id + ':' + client_secret).encode('utf-8')
     encoded_string = str(b64encode(string))
@@ -137,7 +144,15 @@ def refresh_access_token():
     data = response.json()
     print(data)
     access_token = data['access_token']
-    os.environ['ACCESS_TOKEN'] = access_token
+
+## Testing only
+
+@app.after_request
+def add_header(r):
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    return r
 
 if __name__ == "__main__":
     socketio.run(app)

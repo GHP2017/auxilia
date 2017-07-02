@@ -8,18 +8,32 @@ pause = function() {
 };
 
 socket = io.connect('http://' + document.domain + ':' + location.port);
+
 socket.on('connect', function() {
     socket.emit('client_connected', {data: 'I\'m connected!'});
 });
+
 socket.on('queue_changed', function(data) {
     console.log('the queue is updating')
     app.queue = data;
 });
 
+socket.on('suggestions_changed', function(data) {
+    console.log('new suggestions inbound');
+    app.search = data;
+});
+
 app = new Vue({
     el: '#app',
     data: {
-        queue: []
+        queue: [],
+        search: '',
+        suggestions: []
+    },
+    watch: {
+        search: function () {
+            console.log(this.search);
+        }
     }
 })
 
