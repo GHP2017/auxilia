@@ -1,32 +1,58 @@
 from lib.Song import Song
+import ast
 
 class Queue:
 
-    def __init__(self): 
-        self.queue = []
-        self.played = []
+    def __init__(self, cache): 
+        self.cache = cache
+        self.cache.set('queue', [])
+        self.cache.set('history', [])
 
     def addSong(self, song):
-        self.queue.append(song)
-        self.sortSongs()
+        queue = self.instantiate_queue()
+        queue.append(song.to_dict())
+        self.sortSongs(queue)
+        self.cache.set('queue', queue)
 
     def getSong(self):
-        song = self.queue.pop(0)
-        self.played.append(song)
-        self.ageSongs()
-        self.calculateScore()
-        self.sortSongs()
-        return song
+        queue = self.instantiate_queue()
+        song_data = queue.pop(0)
 
-    def sortSongs(self):
-        self.queue.sort(key = lambda x: x.score)
-
-    def calculateScore(self, song):
-        song.score = age**1.5 + upvotes - downvotes
+        history = self.instantiate_history()
+        history.append(song_data)
         
-    def ageSongs(self):
-        for song in self.queue:
-            song.age = song.age + 1
+        self.ageSongs(queue)
+        self.calculateScore(queue)
+        self.sortSongs(queue)
+
+        self.cache.set('queue', queue)
+        self.cache.set('history', history)
+
+        keys = ['name', 'track_id', 'artist', 'album_uri', 'album_name', 'duration', 'suggested']
+        args = [song_data[key] for key in keys]
+        return Song(*args)
+
+    def sortSongs(self, queue):
+        queue.sort(key = lambda x: x['score'])
+
+    def calculateScore(self, queue):
+        for song in queue:
+            song['score'] = song['age']**1.5 + song['upvotes'] - song['downvotes']
+        
+    def ageSongs(self, queue):
+        for song in queue:
+            song['age'] += 1
+
+    def instantiate_queue(self):
+        serialized_queue = self.cache.get('queue')
+        queue = ast.literal_eval(serialized_queue.decode('utf-8'))
+        return queue
+
+    def instantiate_history(self):
+        serialized_history = self.cache.get('history')
+        history = ast.literal_eval(serialized_history.decode('utf-8'))
+        return history
 
     def serialize(self):
-        return [song.to_dict() for song in self.queue]
+        return self.instantiate_queue()
+        

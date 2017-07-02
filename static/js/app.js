@@ -20,7 +20,7 @@ socket.on('queue_changed', function(data) {
 
 socket.on('suggestions_changed', function(data) {
     console.log('new suggestions inbound');
-    app.search = data;
+    app.suggestions = data;
 });
 
 app = new Vue({
@@ -32,7 +32,7 @@ app = new Vue({
     },
     watch: {
         search: function () {
-            console.log(this.search);
+            socket.emit('searchbar_changed', {query: this.search})
         }
     }
 })

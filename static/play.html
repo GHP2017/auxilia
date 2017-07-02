@@ -11,6 +11,17 @@
 <button onclick="resume()">Resume</button>
 <button onclick="pause()">Pause</button>
 <input v-model.trim="search" @keyup.some_key="change" placeholder="Search">
+<h2>Search Results</h2>
+<div class="row expanded background">
+    <div class="small-12 small-centered column">
+        <ul>
+            <li v-for="song in suggestions" id="search">
+                {{song.name}}
+            </li>
+        </ul>
+    </div>
+</div>
+<h2>Queue</h2>
 <div class="row expanded background">
     <div class="small-12 small-centered column">
         <ul>
