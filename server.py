@@ -1,13 +1,17 @@
 from flask import Flask, redirect, request
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from lib.Queue import Queue
-import os
+from lib.Song import Song
+from lib.spotify import get_request, create_song
 import requests as http
 import json
+import redis as rd
 from base64 import b64encode
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+cache = rd.StrictRedis(host='localhost', port=6379, db=0)
+queue = Queue(cache)
 
 client_id = 'f3b0c51df1124cc985fd4012b6d55d95'
 client_secret = 'e54ca2e0bf394944a1247830443dba3c'
@@ -17,50 +21,13 @@ redirect_uri = 'http://127.0.0.1:5000/callback'
 
 authorize_uri = 'https://accounts.spotify.com/authorize'
 token_uri = 'https://accounts.spotify.com/api/token'
+
 play_uri = 'https://api.spotify.com/v1/me/player/play'
 pause_uri = 'https://api.spotify.com/v1/me/player/pause'
-
-code = ''
-token = ''
+track_uri = 'https://api.spotify.com/v1/tracks/'
+search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
 
 ## OAUTH2 
-
-def get_request(url, call_type='GET', body=None):
-    print(os.environ['ACCESS_TOKEN'])
-    if call_type is 'GET':
-        response = http.get(url, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
-        if int(response.status_code) >= 400:
-            refresh_access_token()
-            response = http.get(url, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
-    if call_type is 'POST':
-        response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
-        print(response.text)
-        if int(response.status_code) >= 400:
-            refresh_access_token()
-            response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
-    if call_type is 'PUT':
-        response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
-        print(response.text, response.status_code)
-        if int(response.status_code) >= 400:
-            refresh_access_token()
-            response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + os.environ['ACCESS_TOKEN']})
-
-    return response
-
-
-def refresh_access_token():
-    body = {
-        'grant_type': 'refresh_token',
-        'refresh_token': os.environ['REFRESH_TOKEN']
-    }
-    string = (client_id + ':' + client_secret).encode('utf-8')
-    encoded_string = str(b64encode(string))
-    response = http.post(token_uri, data=body, headers={'Authorization': 'Basic ' + encoded_string})
-    data = response.json()
-    print(data)
-    access_token = data['access_token']
-    os.environ['ACCESS_TOKEN'] = access_token
-
 
 @app.route("/callback")
 def callback():
@@ -73,13 +40,12 @@ def callback():
         'client_secret': client_secret
     })
     data = result.json()
-    print(data)
-    token = data['access_token']
-    refresh = data['refresh_token']
-    print(token)
-
-    os.environ['REFRESH_TOKEN'] = refresh
-    os.environ['ACCESS_TOKEN'] = token
+    
+    access_token = data['access_token']
+    refresh_token = data['refresh_token']
+    
+    cache.set('access_token', access_token)
+    cache.set('refresh_token', refresh_token)
 
     return redirect('/static/play.html')
     
@@ -92,8 +58,10 @@ def authenticate():
 
 @app.route("/add_song")
 def add_song():
-    song = request.args.get('song')
-    print(get_request(play_uri, body=json.dumps({'uris': [song]}), call_type='PUT'))
+    track_id = request.args.get('song')
+    song_obj = create_song(track_id)
+    queue.addSong(song_obj)
+    queue_change()
     return 'success'
 
 ## Playback Endpoints
@@ -109,10 +77,39 @@ def pause():
     print(get_request(pause_uri, call_type='PUT'))
     return 'success'
 
+## Websocket Events
 
-@socketio.on('my event')
-def handle_my_custom_event(json):
-    print('received json: ' + str(json))
+@socketio.on('client_connected')
+def client_connected(data):
+    print('a client connected')
+    emit('queue_changed', queue.serialize())
+
+@socketio.on('searchbar_changed')
+def searchbar_changed(data):
+    print('searchbar changing...')
+    print('searching for ' + data['query'])
+    query = data['query'].replace(' ', '+')
+    response = get_request(search_uri + query)
+    songs = []
+    for track_obj in response.json()['tracks']['items']:
+        songs.append(create_song(track_obj))
+    serialized_songs = [song.to_dict() for song in songs]
+    emit('suggestions_changed', serialized_songs)
+
+def queue_change():
+    socketio.emit('queue_changed', queue.serialize())
+
+
+## Helper Methods
+
+## Testing only
+
+@app.after_request
+def add_header(r):
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    return r
 
 if __name__ == "__main__":
     socketio.run(app)
