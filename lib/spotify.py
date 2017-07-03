@@ -1,9 +1,30 @@
-import requests as http
-import redis as rd
+from flask import Flask, redirect, request
+from flask_socketio import SocketIO, emit
+from lib.Queue import Queue
 from lib.Song import Song
+import requests as http
+import json
+import redis as rd
+from base64 import b64encode
 
-track_uri = 'https://api.spotify.com/v1/tracks/'
+app = Flask(__name__)
+socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
+queue = Queue(cache)
+
+client_id = 'f3b0c51df1124cc985fd4012b6d55d95'
+client_secret = 'e54ca2e0bf394944a1247830443dba3c'
+
+redirect_uri = 'http://127.0.0.1:5000/callback'
+#redirect_uri = 'https://example-django-app-dude0faw3.c9users.io/callback'
+
+authorize_uri = 'https://accounts.spotify.com/authorize'
+token_uri = 'https://accounts.spotify.com/api/token'
+
+play_uri = 'https://api.spotify.com/v1/me/player/play'
+pause_uri = 'https://api.spotify.com/v1/me/player/pause'
+track_uri = 'https://api.spotify.com/v1/tracks/'
+search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
 
 def get_request(url, call_type='GET', body=None):
     access_token = cache.get('access_token').decode('utf-8')

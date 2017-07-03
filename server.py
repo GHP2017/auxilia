@@ -64,6 +64,13 @@ def add_song():
     queue_change()
     return 'success'
 
+@app.route('/get_next_song')
+def get_next_song():
+    next_song = queue.getSong()
+    print(type(next_song))
+    queue_change()
+    return json.dumps(next_song.to_dict())
+
 ## Playback Endpoints
 
 @app.route("/resume")
