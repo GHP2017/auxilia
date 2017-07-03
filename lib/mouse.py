@@ -5,7 +5,7 @@ class Mouse:
     def __init__(self):
         pass
 
-    def playSong(track_id):
+    def playSong(self, track_id):
         os.system("xdotool mousemove 45 260")
         time.sleep(.1)
         os.system("xdotool click 1")
@@ -18,9 +18,12 @@ class Mouse:
         time.sleep(.2)
         os.system("xdotool key KP_Enter")
 
-    def pause():
+    def pause(self):
         os.system("xdotool key KP_Space")
     
-    def play():
+    def play(self):
         os.system("xdotool key KP_Space")
+m = Mouse()
+m.playSong("spotify:track:3L7BcXHCG8uT92viO6Tikl")
+        
     
