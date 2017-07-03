@@ -2,6 +2,7 @@ from flask import Flask, redirect, request
 from flask_socketio import SocketIO, emit
 from lib.Queue import Queue
 from lib.Song import Song
+from lib.spotify import get_request, create_song
 import requests as http
 import json
 import redis as rd
@@ -100,44 +101,6 @@ def queue_change():
 
 
 ## Helper Methods
-
-
-
-def get_request(url, call_type='GET', body=None):
-    access_token = cache.get('access_token').decode('utf-8')
-    if call_type is 'GET':
-        response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
-        if int(response.status_code) >= 400:
-            print(response.status_code)
-            refresh_access_token()
-            response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
-    if call_type is 'POST':
-        response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
-        print(response.text)
-        if int(response.status_code) >= 400:
-            refresh_access_token()
-            response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
-    if call_type is 'PUT':
-        response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
-        print(response.text, response.status_code)
-        if int(response.status_code) >= 400:
-            refresh_access_token()
-            response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
-
-    return response
-
-
-def refresh_access_token():
-    body = {
-        'grant_type': 'refresh_token',
-        'refresh_token': cache.get('refresh_token').decode('utf-8')
-    }
-    string = (client_id + ':' + client_secret).encode('utf-8')
-    encoded_string = str(b64encode(string))
-    response = http.post(token_uri, data=body, headers={'Authorization': 'Basic ' + encoded_string})
-    data = response.json()
-    
-    cache.set('access_token', data['access_token'])
 
 ## Testing only
 
