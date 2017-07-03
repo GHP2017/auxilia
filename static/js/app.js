@@ -23,6 +23,7 @@ socket.on('suggestions_changed', function(data) {
     app.suggestions = data;
 });
 
+submit_song_url = 'http://127.0.0.1:5000/add_song?song=spotify:track:'
 app = new Vue({
     el: '#app',
     data: {
@@ -33,6 +34,15 @@ app = new Vue({
     watch: {
         search: function () {
             socket.emit('searchbar_changed', {query: this.search})
+        }
+    },
+    methods: {
+        submit_song: function (track_id) {
+            $.ajax(submit_song_url + track_id).done(function (data) {
+                console.log('success')
+            }).fail(function (data) {
+                console.log('failure')
+            })
         }
     }
 })

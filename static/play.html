@@ -16,7 +16,7 @@
     <div class="small-12 small-centered column">
         <ul>
             <li v-for="song in suggestions" id="search">
-                {{song.name}}
+                <button v-on:click="submit_song(song.track_id)"> {{song.name}} </button>
             </li>
         </ul>
     </div>
