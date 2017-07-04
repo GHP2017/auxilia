@@ -20,6 +20,10 @@ socket.on('queue_changed', function(data) {
 
 socket.on('suggestions_changed', function(data) {
     console.log('new suggestions inbound');
+    for (i = 0; i < data.length; i ++) {
+        song = data[i]
+        song['was_upvoted'] = false;
+    }
     app.suggestions = data;
 });
 
@@ -43,6 +47,9 @@ app = new Vue({
             }).fail(function (data) {
                 console.log('failure')
             })
+        },
+        upvote: function (index) {
+            self.queue[index]['was_upvoted'] = true;
         }
     }
 })

@@ -21,7 +21,7 @@ html,body {
 }
 @font-face {
     font-family: Avenir;
-    src: url(AvenirBook.otf)
+    src: url("/static/fonts/AvenirBook.otf")
 }
 ul
 {
@@ -36,10 +36,11 @@ list-style-type: none;
 	padding-left: 10px;
 	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif;
 	text-overflow: ellipsis;
-  white-space: nowrap;
+  	white-space: nowrap;
+	padding-right: 7px;
 }
 .query:focus {
-	border: 1px #3079FB solid;
+	border: 1px #EB4533 solid;
 	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif
 }
 .queue {
