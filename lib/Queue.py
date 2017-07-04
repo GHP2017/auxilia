@@ -14,6 +14,14 @@ class Queue:
         self.sortSongs(queue)
         self.cache.set('queue', queue)
 
+    def addImplicit(self, songs):
+        queue = self.instantiate_queue()
+        if len(queue)<5:
+            num=5-len(queue)
+            new_songs=get_implicit_songs(songs, num)
+            queue.extend(new_songs)
+            self.cache.set('queue', queue)                
+
     def getSong(self):
         queue = self.instantiate_queue()
         song_data = queue.pop(0)
