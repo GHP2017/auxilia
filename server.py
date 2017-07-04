@@ -103,6 +103,12 @@ def searchbar_changed(data):
     serialized_songs = [song.to_dict() for song in songs]
     emit('suggestions_changed', serialized_songs)
 
+@socketio.on('thumbs_change')
+def thumbs_change(data):
+    print('song got thumbs up or thumbs down')
+    queue.thumbs_change(data['track_id'], data['change'])
+    queue_change()
+
 def queue_change():
     socketio.emit('queue_changed', queue.serialize())
 

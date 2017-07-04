@@ -24,25 +24,6 @@ class Queue:
         self.sortSongs(queue)
         self.cache.set('queue', queue)
 
-    def addImplicit(self, queue, history):
-        song_seeds = []
-
-        for song in history:
-            if song['explicit']:
-                song_seeds.append(song)
-        
-        if len(song_seeds) < 5:
-            for song in history:
-                if song['explicit']:
-                    song_seeds.append(song)
-
-        if len(song_seeds) > 5:
-            song_seeds = song_seeds[:5]
-        
-        num = 5 - len(queue)
-        new_songs = get_implicit_songs(song_seeds, num)
-        queue.extend(new_songs)
-
     def getSong(self):
         queue = self.instantiate_queue()
         song_data = queue.pop(0)
@@ -63,6 +44,41 @@ class Queue:
         keys = ['name', 'track_id', 'artist', 'album_uri', 'album_name', 'duration', 'explicit']
         args = [song_data[key] for key in keys]
         return Song(*args)
+
+    def addImplicit(self, queue, history):
+        song_seeds = []
+
+        for song in history:
+            if song['explicit']:
+                song_seeds.append(song)
+        
+        if len(song_seeds) < 5:
+            for song in history:
+                if song['explicit']:
+                    song_seeds.append(song)
+
+        if len(song_seeds) > 5:
+            song_seeds = song_seeds[:5]
+        
+        num = 5 - len(queue)
+        new_songs = get_implicit_songs(song_seeds, num)
+        queue.extend(new_songs)
+
+    def thumbs_change(self, track_id, change):
+        queue = self.instantiate_queue()
+        
+        changing_song = None
+        for song in queue:
+            if song['track_id'] == track_id:
+                changing_song = song
+                break
+
+        if change is 'up':
+            if not changing_song['explicit']:
+                changing_song['explicit'] = True
+            changing_song['upvotes'] += 1
+
+        self.cache.set('queue', queue)
 
     def sortSongs(self, queue):
         queue.sort(key = lambda x: x['score'])
