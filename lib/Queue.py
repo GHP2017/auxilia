@@ -11,16 +11,16 @@ class Queue:
     def addSong(self, song):
         queue = self.instantiate_queue()
         index = None
-        for song, i in enumerate(queue):
-            if not song['explicit']:
+        for i, song_obj in enumerate(queue):
+            if not song_obj['explicit']:
                 index = i
                 break
 
         if index is None:
-            index = len(queue)
-
-        queue[index] = song.to_dict()
-
+            queue.append(song.to_dict())
+        else:
+            queue[index] = song.to_dict()
+        print(len(queue))
         self.sortSongs(queue)
         self.cache.set('queue', queue)
 
