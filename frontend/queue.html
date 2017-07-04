@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+	<head>
+  <!-- #222326, #EB4533, #37393E -->
+	<meta charset="UTF-8">
+	<title>DJ Music</title>
+  <link rel="stylesheet" type="text/css">
+	<link href="files/layout.css" rel="stylesheet" type="text/css">
+</head>
+<body bgcolor="#222326">
+	<div style="text-align: center; margin-top: 10px;"><input type="text" placeholder="Search" class="query"></div>
+	<div class="title" style="text-align: center; margin-top: 7px;">Current Queue</div>
+  <div class="queue">
+  <div class="row">
+  	<img class="artwork" src="https://i.scdn.co/image/31b0a579225a718b4b1aea0ac6f9e9bdd3da17b0" alt="artwork"/>
+    <div class="song_name">Mask Off</div>
+    <div class="song_info">Future - Future</div>
+    <table class="extra">
+    	<tr>
+      	<td>
+				<script language="javascript" type="text/javascript">
+					function chngimg() {
+							var img = document.getElementById('upvote').src;
+							if (img.indexOf('up_active.png')!=-1) {
+									document.getElementById('upvote').src  = 'files/up.png';
+							}
+							 else {
+								 document.getElementById('upvote').src = 'files/up_active.png';
+								 document.getElementById('downvote').src = 'files/down.png';
+						 }
+			
+					}
+			</script>
+			<img id="upvote" class="uvote" src="files/up.png" alt="Up Vote" onmouseover="this.style.cursor='pointer'" onclick="chngimg()" />
+			</td>
+        <td><script language="javascript" type="text/javascript">
+					function chngimg2() {
+							var img = document.getElementById('downvote').src;
+							if (img.indexOf('down_active.png')!=-1) {
+									document.getElementById('downvote').src  = 'files/down.png';
+							}
+							 else {
+								 document.getElementById('downvote').src = 'files/down_active.png';
+								 document.getElementById('upvote').src = 'files/up.png';
+						 }
+			
+					}
+			</script>
+			<img id="downvote" class="dvote" src="files/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" onclick="chngimg2()" /></td>
+        <td><div class="duration">Duration: 3:23</div></td>
+        <td><div class="year">Year: 2017</div></td>
+     </tr>
+    </table>
+  </div>
+  </div>
+  <div class="current">
+  	<div class="title" style="margin-top: 7px; margin-bottom: 5px;">Playing Now:</div>
+  	<img class="artwork" src="https://images.genius.com/ccc87d4afb4e2d957a8c3c2700390bc1.1000x1000x1.jpg" alt="artwork"/>
+    <div class="song_name">I'm the One</div>
+    <div class="song_info" style="margin-top: 3px;">DJ Khaled ft. Justin Bieber, Quavo, Chance the Rapper, &amp; Lil Wayne - Grateful</div>
+    <div style="width: 100%; margin-top: 4px;">
+      <div class="current_time">1:23</div>
+      <div class="progcontainer"><progress value="23" max="100" style="width: 49%;"></progress></div>
+      <div class="total_time">3:49</div>
+    </div>
+  </div>
+</body>
+</html>
