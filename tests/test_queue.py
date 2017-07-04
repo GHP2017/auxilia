@@ -1,5 +1,4 @@
 import unittest
-from lib.Song import Song
 import ast
 
 class TestQueueFunctions(unittest.TestCase):
@@ -9,3 +8,6 @@ class TestQueueFunctions(unittest.TestCase):
         self.cache.set('queue', [])
         self.cache.set('history', [])
     
+    def test_calculate_score(self):
+        queue = self.instantiate_queue()
+        
