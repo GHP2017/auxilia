@@ -10,17 +10,38 @@ class Queue:
 
     def addSong(self, song):
         queue = self.instantiate_queue()
-        queue.append(song.to_dict())
+        index = None
+        for song, i in enumerate(queue):
+            if not song['explicit']:
+                index = i
+                break
+
+        if index is None:
+            index = len(queue)
+
+        queue[index] = song.to_dict()
+
         self.sortSongs(queue)
         self.cache.set('queue', queue)
 
-    def addImplicit(self, songs):
-        queue = self.instantiate_queue()
-        if len(queue)<5:
-            num=5-len(queue)
-            new_songs=get_implicit_songs(songs, num)
-            queue.extend(new_songs)
-            self.cache.set('queue', queue)                
+    def addImplicit(self, queue, history):
+        song_seeds = []
+
+        for song in history:
+            if song['explicit']:
+                song_seeds.append(song)
+        
+        if len(song_seeds) < 5:
+            for song in history:
+                if song['explicit']:
+                    song_seeds.append(song)
+
+        if len(song_seeds) > 5:
+            song_seeds = song_seeds[:5]
+        
+        num = 5 - len(queue)
+        new_songs = get_implicit_songs(song_seeds, num)
+        queue.extend(new_songs)
 
     def getSong(self):
         queue = self.instantiate_queue()
@@ -28,6 +49,9 @@ class Queue:
 
         history = self.instantiate_history()
         history.append(song_data)
+
+        if len(queue) < 5:
+            self.addImplicit(queue, history)
         
         self.ageSongs(queue)
         self.calculateScore(queue)
@@ -36,7 +60,7 @@ class Queue:
         self.cache.set('queue', queue)
         self.cache.set('history', history)
 
-        keys = ['name', 'track_id', 'artist', 'album_uri', 'album_name', 'duration', 'suggested']
+        keys = ['name', 'track_id', 'artist', 'album_uri', 'album_name', 'duration', 'explicit']
         args = [song_data[key] for key in keys]
         return Song(*args)
 
@@ -45,11 +69,15 @@ class Queue:
 
     def calculateScore(self, queue):
         for song in queue:
-            song['score'] = song['age']**1.5 + song['upvotes'] - song['downvotes']
+            if song['explicit']:
+                song['score'] = song['age']**1.5 + song['upvotes'] - song['downvotes']
+            else:
+                song['score'] = 0
         
     def ageSongs(self, queue):
         for song in queue:
-            song['age'] += 1
+            if song['explicit']:
+                song['age'] += 1
 
     def instantiate_queue(self):
         serialized_queue = self.cache.get('queue')

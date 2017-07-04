@@ -25,6 +25,7 @@ play_uri = 'https://api.spotify.com/v1/me/player/play'
 pause_uri = 'https://api.spotify.com/v1/me/player/pause'
 track_uri = 'https://api.spotify.com/v1/tracks/'
 search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
+recommendations_uri = 'https://api.spotify.com/v1/recommendations?seed_tracks='
 
 def get_request(url, call_type='GET', body=None):
     access_token = cache.get('access_token').decode('utf-8')
@@ -79,4 +80,7 @@ def create_song(track):
     return Song(track_name, track_id, track_artists, album_uri, album_name, duration, False)
 
 def get_implicit_songs(seeds, num):
-    return create_song("spotify:track:0VgkVdmE4gld66l8iyGjgx")
+    songs = ','.join([song['track_id'] for song in seeds])
+    response = get_request(recommendations_uri + songs + '&limit=' + str(num))
+    data = response.json()
+    return [create_song(track_obj) for track_obj in data['tracks']]

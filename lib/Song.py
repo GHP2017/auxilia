@@ -1,5 +1,7 @@
 class Song:
-    def __init__(self, name, track_id, artist, album_uri, album_name, duration, suggested):
+    # explicit refers to this song being purposefully added by a user,
+    # as opposed to by algorithm
+    def __init__(self, name, track_id, artist, album_uri, album_name, duration, explicit):
         self.name = name
         self.track_id = track_id
         self.artist = artist
@@ -10,7 +12,7 @@ class Song:
         self.upvotes = 0
         self.downvotes = 0
         self.age = 0
-        self.suggested = suggested
+        self.explicit = explicit
 
     def to_dict(self):
         return {
@@ -24,5 +26,5 @@ class Song:
             'upvotes': self.upvotes,
             'downvotes': self.downvotes,
             'age': self.age,
-            'suggested': self.suggested
+            'explicit': self.explicit
         }
