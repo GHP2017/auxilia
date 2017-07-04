@@ -112,9 +112,6 @@ def thumbs_change(data):
 def queue_change():
     socketio.emit('queue_changed', queue.serialize())
 
-
-## Helper Methods
-
 ## Testing only
 
 @app.after_request
