@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 dump.rdb
-
+.DS_Store
 # Distribution / packaging
 .Python
 env/

@@ -15,15 +15,16 @@ socket.on('connect', function() {
 
 socket.on('queue_changed', function(data) {
     console.log('the queue is updating')
+    for (i = 0; i < data.length; i ++) {
+        song = data[i]
+        song['was_upvoted'] = false;
+        song['was_downvoted'] = false;
+    }
     app.queue = data;
 });
 
 socket.on('suggestions_changed', function(data) {
     console.log('new suggestions inbound');
-    for (i = 0; i < data.length; i ++) {
-        song = data[i]
-        song['was_upvoted'] = false;
-    }
     app.suggestions = data;
 });
 
@@ -49,7 +50,26 @@ app = new Vue({
             })
         },
         upvote: function (index) {
-            self.queue[index]['was_upvoted'] = true;
+            song = this.queue[index]
+            console.log(song)
+            if (song['was_upvoted']) {
+                song['was_upvoted'] = false
+            }
+            else {
+                song['was_upvoted'] = true
+                song['was_downvoted'] = false
+            }
+        },
+        downvote: function (index) {
+            song = this.queue[index]
+            console.log(song)
+            if (song['was_downvoted']) {
+                song['was_downvoted'] = false
+            }
+            else {
+                song['was_downvoted'] = true
+                song['was_upvoted'] = false
+            }
         }
     }
 })
