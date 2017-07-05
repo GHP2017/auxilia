@@ -76,3 +76,6 @@ def get_implicit_songs(seeds, num):
     response = get_request(recommendations_uri + songs + '&limit=' + str(num))
     data = response.json()
     return [create_song(track_obj).to_dict() for track_obj in data['tracks']]
+
+def get_medians(seeds, num):
+    
