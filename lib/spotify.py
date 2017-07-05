@@ -17,6 +17,8 @@ def get_request(url, call_type='GET', body=None):
     access_token = cache.get('access_token').decode('utf-8')
     if call_type is 'GET':
         response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
+        ## TODO:
+        # change for different responses; invalid client, malformed request, etc.
         if int(response.status_code) >= 400:
             print(response.status_code)
             refresh_access_token()

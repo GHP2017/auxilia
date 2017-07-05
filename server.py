@@ -17,7 +17,7 @@ client_id = 'f3b0c51df1124cc985fd4012b6d55d95'
 client_secret = 'e54ca2e0bf394944a1247830443dba3c'
 
 #redirect_uri = 'http://127.0.0.1:5000/callback'
-redirect_uri = 'http://172.16.33.88:5000/callback'
+redirect_uri = 'http://172.16.35.73:5000/callback'
 #redirect_uri = 'https://example-django-app-dude0faw3.c9users.io/callback'
 
 authorize_uri = 'https://accounts.spotify.com/authorize'

@@ -48,8 +48,7 @@
 			<div v-else>
 				<img id="downvote" class="dvote" src="images/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />	
 			</div>
-        <td><div class="duration">Duration: 3:23</div></td>
-        <td><div class="year">Year: 2017</div></td>
+        <td><div class="duration">Duration: {{song.duration}} </div></td>
      </tr>
     </table>
   </div>
@@ -66,8 +65,7 @@
 		<img src="images/delete.png" class="addition" alt="del"/>
     <div class="song_info" style="margin-top: 5px;">{{song.artist}} - {{song.album_name}}</div>
     <div style="margin-top: 5px;">
-      <div class="duration" style="margin-left: 0px;">Duration: 3:23</div>
-      <div class="year">Year: 2016</div>
+      <div class="duration" style="margin-left: 0px;">Duration: {{song.duration}}</div>
     </div>
   </div>
 	</div>
