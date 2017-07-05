@@ -52,8 +52,11 @@ def callback():
     
 @app.route("/authenticate")
 def authenticate():
-    return redirect(authorize_uri + '?client_id=' + client_id + \
+    try:
+        return redirect(authorize_uri + '?client_id=' + client_id + \
                     '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
+    except Exception as e:
+        return ('authenticate() threw ' +str(e))
 
 ## Queue 
 
@@ -61,21 +64,29 @@ def authenticate():
 def add_song():
     try:
         track_id = request.args.get('song')
+        print(track_id)
         song_obj = create_song(track_id)
         queue.addSong(song_obj)
         queue_change()
         return 'success'
     except Exception as e:
-        return(str(e))
+        return('add_song() threw ' + str(e))
 
 @app.route('/get_next_song')
 def get_next_song():
-    next_song = queue.getSong()
-    print(type(next_song))
-    queue_change()
-    return json.dumps(next_song.to_dict())
+    try:
+        next_song = queue.getSong()
+        queue_change()
+        currently_playing_change(next_song)
+        return json.dumps(next_song.to_dict())
+    except Exception as e:
+        return('get_next_song() threw ' + str(e))
 
-## Error Handling
+## HTTP Error Handling
+@app.errorhandler(403)
+def forbidden():
+    return render_template('403.html')
+
 @app.errorhandler(404)
 def page_not_found():
     return render_template('404.html')
@@ -124,6 +135,9 @@ def thumbs_change(data):
 
 def queue_change():
     socketio.emit('queue_changed', queue.serialize())
+    
+def currently_playing_change(song):
+    socketio.emit('currently_playing_changed', song.to_dict())
 
 ## Testing only
 

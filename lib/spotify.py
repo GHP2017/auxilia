@@ -21,6 +21,7 @@ def get_request(url, call_type='GET', body=None):
         # change for different responses; invalid client, malformed request, etc.
         if int(response.status_code) >= 400:
             print(response.status_code)
+            print(response.text)
             refresh_access_token()
             response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'POST':
@@ -65,10 +66,16 @@ def create_song(track):
     album_uri = data['album']['images'][0]['url']
     album_name = data['album']['name']
     duration = data['duration_ms']
-    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, True)
+    explicit = True
+    valence = data['valence']
+    energy = data['energy']
+    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit, valence, energy)
 
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])
     response = get_request(recommendations_uri + songs + '&limit=' + str(num))
     data = response.json()
     return [create_song(track_obj).to_dict() for track_obj in data['tracks']]
+
+def get_medians(seeds, num):
+    

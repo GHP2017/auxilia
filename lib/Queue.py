@@ -42,7 +42,7 @@ class Queue:
         self.cache.set('queue', queue)
         self.cache.set('history', history)
 
-        keys = ['name', 'track_id', 'artist', 'album_uri', 'album_name', 'duration', 'explicit']
+        keys = ['name', 'track_id', 'artist', 'album_uri', 'album_name', 'duration', 'explicit', 'valence', 'energy']
         args = [song_data[key] for key in keys]
         return Song(*args)
 
