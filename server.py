@@ -81,7 +81,11 @@ def get_next_song():
     except Exception as e:
         return('get_next_song() threw ' + str(e))
 
-## Error Handling
+## HTTP Error Handling
+@app.errorhandler(403)
+def forbidden():
+    return render_template('403.html')
+
 @app.errorhandler(404)
 def page_not_found():
     return render_template('404.html')
