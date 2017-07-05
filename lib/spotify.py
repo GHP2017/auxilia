@@ -65,7 +65,10 @@ def create_song(track):
     album_uri = data['album']['images'][0]['url']
     album_name = data['album']['name']
     duration = data['duration_ms']
-    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, True)
+    explicit = True
+    valence = data['valence']
+    energy = data['energy']
+    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit, valence, energy)
 
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])
