@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, render_template
 from flask_socketio import SocketIO, emit
 from lib.Queue import Queue
 from lib.Song import Song
@@ -59,11 +59,14 @@ def authenticate():
 
 @app.route("/add_song")
 def add_song():
-    track_id = request.args.get('song')
-    song_obj = create_song(track_id)
-    queue.addSong(song_obj)
-    queue_change()
-    return 'success'
+    try:
+        track_id = request.args.get('song')
+        song_obj = create_song(track_id)
+        queue.addSong(song_obj)
+        queue_change()
+        return 'success'
+    except Exception as e:
+        return(str(e))
 
 @app.route('/get_next_song')
 def get_next_song():
@@ -71,6 +74,15 @@ def get_next_song():
     print(type(next_song))
     queue_change()
     return json.dumps(next_song.to_dict())
+
+## Error Handling
+@app.errorhandler(404)
+def page_not_found():
+    return render_template('404.html')
+
+@app.errorhandler(500) #must turn off debugging mode in order to use this custom error handling
+def internal_error(error):
+    return '500 Error'
 
 ## Playback Endpoints
 
