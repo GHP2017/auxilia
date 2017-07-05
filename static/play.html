@@ -6,12 +6,24 @@
 	<title>DJ Music</title>
   <link rel="stylesheet" type="text/css">
 	<link href="css/layout.css" rel="stylesheet" type="text/css">
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link href="css/boilerplate.css" rel="stylesheet" type="text/css">
+	<link href="css/boilerplate.css" rel="stylesheet" type="text/css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body bgcolor="#222326">
 	<div id="app">
-	<div style="text-align: center; margin-top: 10px;"><input type="search" placeholder="Search" class="query"></div>
+		<div style="text-align: center; margin-top: 7px;"><input type="search" v-model="search" @keyup.some_key="change" placeholder="Search for Songs to Add" class="query"></div>
+		 <div class="current">
+  	<div class="title" style="margin-top: 0px; margin-bottom: 5px;">Playing Now:</div>
+  	<img class="artwork" src="https://images.genius.com/ccc87d4afb4e2d957a8c3c2700390bc1.1000x1000x1.jpg" alt="artwork"/>
+    <div class="song_name">I'm the One</div>
+    <div class="song_info" style="margin-top: 3px;">DJ Khaled ft. Justin Bieber, Quavo, Chance the Rapper, &amp; Lil Wayne - Grateful</div>
+    <div style="width: 100%; margin-top: 4px;">
+      <div class="current_time">1:23</div>
+      <div class="progcontainer"><progress value="23" max="100" style="width: 49%;"></progress></div>
+      <div class="total_time">3:49</div>
+    </div>
+  </div>
+	<div v-if="search.length == 0">
 	<div class="title" style="text-align: center; margin-top: 7px;">Current Queue</div>
   <div class="queue">
 	<div v-for="(song, index) in queue">
@@ -30,26 +42,34 @@
 			</div>
 			</td>
         <td>
-			<img id="downvote" class="dvote" src="images/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" onclick="chngimg2()" /></td>
-        <td><div class="duration">Duration: 3:23</div></td>
-        <td><div class="year">Year: 2017</div></td>
+			<div v-if="song.was_downvoted">
+				<img id="downvote" class="dvote" src="images/down_active.png" alt="Downvoted" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />
+			</div>
+			<div v-else>
+				<img id="downvote" class="dvote" src="images/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />	
+			</div>
+        <td><div class="duration">Duration: {{song.duration}} </div></td>
      </tr>
     </table>
   </div>
 	</div>
   </div>
-	
-  <div class="current">
-  	<div class="title" style="margin-top: 7px; margin-bottom: 5px;">Playing Now:</div>
-  	<img class="artwork" src="https://images.genius.com/ccc87d4afb4e2d957a8c3c2700390bc1.1000x1000x1.jpg" alt="artwork"/>
-    <div class="song_name">I'm the One</div>
-    <div class="song_info" style="margin-top: 3px;">DJ Khaled ft. Justin Bieber, Quavo, Chance the Rapper, &amp; Lil Wayne - Grateful</div>
-    <div style="width: 100%; margin-top: 4px;">
-      <div class="current_time">1:23</div>
-      <div class="progcontainer"><progress value="23" max="100" style="width: 49%;"></progress></div>
-      <div class="total_time">3:49</div>
+	</div>
+	<div v-else>
+		<div v-for="(song, index) in suggestions">
+  <div class="row">
+  	<img class="artwork" v-bind:src="song.album_uri" alt="artwork"/>
+    <div class="song_name">{{song.name}}</div>
+		<!--> ADD IF ELSE HERE </-->
+    <img src="images/add.png" v-on:click="submit_song(song.track_id)" class="addition" alt="add"/>
+		<img src="images/delete.png" class="addition" alt="del"/>
+    <div class="song_info" style="margin-top: 5px;">{{song.artist}} - {{song.album_name}}</div>
+    <div style="margin-top: 5px;">
+      <div class="duration" style="margin-left: 0px;">Duration: {{song.duration}}</div>
     </div>
   </div>
+	</div>
+	</div>
 	</div>
 	<script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
