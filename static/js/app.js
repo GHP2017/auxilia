@@ -1,12 +1,4 @@
 
-resume = function() {
-    song = 'spotify:track:4iV5W9uYEdYUVa79Axb7Rh';
-    $.ajax('/add_song?song=' + song)
-};
-pause = function() {
-    $.ajax('/pause')
-};
-
 socket = io.connect('http://' + document.domain + ':' + location.port);
 
 socket.on('connect', function() {
@@ -28,13 +20,31 @@ socket.on('suggestions_changed', function(data) {
     app.suggestions = data;
 });
 
-submit_song_url = 'http://127.0.0.1:5000/add_song?song=spotify:track:'
+socket.on('currently_playing_changed', function (data) {
+    console.log('next song')
+    data['curr_time'] = 0
+    app.currently_playing = data
+})
+
+
+
+submit_song_url = '/add_song?song=spotify:track:'
+
+Vue.use(VueTouch, {name: 'v-touch'})
+
 app = new Vue({
     el: '#app',
     data: {
         queue: [],
         search: '',
-        suggestions: []
+        suggestions: [],
+        currently_playing: {
+            album_name: '',
+            album_uri: '',
+            name: '',
+            artist: '',
+            duration: '',
+        }
     },
     watch: {
         search: function () {
@@ -43,8 +53,10 @@ app = new Vue({
     },
     methods: {
         submit_song: function (track_id) {
+            console.log('submitting...')
             $.ajax(submit_song_url + track_id).done(function (data) {
                 console.log('success')
+                app.search = ''
             }).fail(function (data) {
                 console.log('failure')
             })
@@ -72,5 +84,12 @@ app = new Vue({
             }
         }
     }
-})
+});
 
+
+update_progress_bar = function () {
+    if (app.currently_playing.curr_time < app.currently_playing.duration / 1000) {
+        app.currently_playing.curr_time += 1
+    }
+}
+setInterval(update_progress_bar, 1000)

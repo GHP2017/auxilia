@@ -64,6 +64,7 @@ def authenticate():
 def add_song():
     try:
         track_id = request.args.get('song')
+        print(track_id)
         song_obj = create_song(track_id)
         queue.addSong(song_obj)
         queue_change()
@@ -75,8 +76,8 @@ def add_song():
 def get_next_song():
     try:
         next_song = queue.getSong()
-        print(type(next_song))
         queue_change()
+        currently_playing_change(next_song)
         return json.dumps(next_song.to_dict())
     except Exception as e:
         return('get_next_song() threw ' + str(e))
@@ -134,6 +135,9 @@ def thumbs_change(data):
 
 def queue_change():
     socketio.emit('queue_changed', queue.serialize())
+    
+def currently_playing_change(song):
+    socketio.emit('currently_playing_changed', song.to_dict())
 
 ## Testing only
 
