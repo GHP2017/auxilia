@@ -21,6 +21,7 @@ def get_request(url, call_type='GET', body=None):
         # change for different responses; invalid client, malformed request, etc.
         if int(response.status_code) >= 400:
             print(response.status_code)
+            print(response.text)
             refresh_access_token()
             response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'POST':
