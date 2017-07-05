@@ -52,8 +52,11 @@ def callback():
     
 @app.route("/authenticate")
 def authenticate():
-    return redirect(authorize_uri + '?client_id=' + client_id + \
+    try:
+        return redirect(authorize_uri + '?client_id=' + client_id + \
                     '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
+    except Exception as e:
+        return ('authenticate() threw ' +str(e))
 
 ## Queue 
 
@@ -66,14 +69,17 @@ def add_song():
         queue_change()
         return 'success'
     except Exception as e:
-        return(str(e))
+        return('add_song() threw ' + str(e))
 
 @app.route('/get_next_song')
 def get_next_song():
-    next_song = queue.getSong()
-    print(type(next_song))
-    queue_change()
-    return json.dumps(next_song.to_dict())
+    try:
+        next_song = queue.getSong()
+        print(type(next_song))
+        queue_change()
+        return json.dumps(next_song.to_dict())
+    except Exception as e:
+        return('get_next_song() threw ' + str(e))
 
 ## Error Handling
 @app.errorhandler(404)
