@@ -2,6 +2,7 @@ from lib.Song import Song
 import requests as http
 import redis as rd
 from base64 import b64encode
+import statistics
 
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
 
@@ -74,4 +75,13 @@ def get_implicit_songs(seeds, num):
     response = get_request(recommendations_uri + songs + '&limit=' + str(num))
     data = response.json()
     return [create_song(track_obj).to_dict() for track_obj in data['tracks']]
+<<<<<<< HEAD
+
+def get_medians(seeds):
+    median_valence = statistics.median(song['valence'] for song in seeds)
+    median_energy = statistics.median(song['energy'] for song in seeds)
+    response = '&target_valence=' + median_valence + '&target_energy' + median_energy
+    return response
+=======
     
+>>>>>>> 7904a93073e898f4aa4f145fdfec2cc0cae7b5d2
