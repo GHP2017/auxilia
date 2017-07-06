@@ -54,7 +54,7 @@ def refresh_access_token():
     cache.set('access_token', data['access_token'])
 
 # takes either a track id or a track object as returned by the spotify api
-def create_song(track):
+def create_song(track, explicit=True):
     if type(track) is str:
         min_track_id = track[14:]
         response = get_request(track_uri + min_track_id)
@@ -67,21 +67,16 @@ def create_song(track):
     album_uri = data['album']['images'][0]['url']
     album_name = data['album']['name']
     duration = data['duration_ms']
-    explicit = True
     return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit)
 
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])
     response = get_request(recommendations_uri + songs + '&limit=' + str(num))
     data = response.json()
-    return [create_song(track_obj).to_dict() for track_obj in data['tracks']]
-<<<<<<< HEAD
+    return [create_song(track_obj, explicit=False).to_dict() for track_obj in data['tracks']]
 
 def get_medians(seeds):
     median_valence = statistics.median(song['valence'] for song in seeds)
     median_energy = statistics.median(song['energy'] for song in seeds)
     response = '&target_valence=' + median_valence + '&target_energy' + median_energy
     return response
-=======
-    
->>>>>>> 7904a93073e898f4aa4f145fdfec2cc0cae7b5d2

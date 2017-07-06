@@ -100,7 +100,7 @@ class Queue:
             if song['explicit']:
                 song['score'] = 3 * song['age'] + 2 * song['upvotes'] - 2 * song['downvotes']
             else:
-                song['score'] = 0
+                song['score'] = -1 * song['downvotes']
         
     def ageSongs(self, queue):
         for song in queue:
