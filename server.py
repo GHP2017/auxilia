@@ -54,8 +54,8 @@ def get_next_song():
         queue_change()
         currently_playing_change(next_song)
         return json.dumps(next_song.to_dict())
-    except Exception as e:
-        return('get_next_song() threw ' + str(e))
+    except IndexError as e:
+        return json.dumps({'error': 'No songs in the queue'})
 
 ## HTTP Error Handling
 """
