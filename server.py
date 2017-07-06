@@ -40,15 +40,12 @@ def play_page():
 
 @app.route("/add_song")
 def add_song():
-    try:
-        track_id = request.args.get('song')
-        print(track_id)
-        song_obj = create_song(track_id)
-        queue.addSong(song_obj)
-        queue_change()
-        return 'success'
-    except Exception as e:
-        return('add_song() threw ' + str(e))
+    track_id = request.args.get('song')
+    print(track_id)
+    song_obj = create_song(track_id)
+    queue.addSong(song_obj)
+    queue_change()
+    return 'success'
 
 @app.route('/get_next_song')
 def get_next_song():

@@ -11,17 +11,14 @@ class Queue:
 
     def addSong(self, song):
         queue = self.instantiate_queue()
+        history = self.instantiate_history()
         index = None
-        for i, song_obj in enumerate(queue):
-            if not song_obj['explicit']:
-                index = i + 1
-                break
+        queue = [song for song in queue if song['explicit']]
+        queue.append(song.to_dict())
 
-        if index is None:
-            queue.append(song.to_dict())
-        else:
-            queue[index] = song.to_dict()
-        print(len(queue))
+        if len(queue) < 5:
+            self.addImplicit(queue, history, fallback_song=song.to_dict())
+        
         self.sortSongs(queue)
         self.cache.set('queue', queue)
 
@@ -46,7 +43,7 @@ class Queue:
         args = [song_data[key] for key in keys]
         return Song(*args)
 
-    def addImplicit(self, queue, history):
+    def addImplicit(self, queue, history, fallback_song=None):
         song_seeds = []
 
         for song in history:
@@ -54,13 +51,17 @@ class Queue:
                 song_seeds.append(song)
         
         if len(song_seeds) < 5:
-            for song in history:
+            for song in queue:
                 if song['explicit']:
                     song_seeds.append(song)
 
         if len(song_seeds) > 5:
             song_seeds = song_seeds[:5]
+
+        if len(song_seeds) is 0:
+            song_seeds = [fallback_song]
         
+        print(song_seeds)
         num = 5 - len(queue)
         new_songs = get_implicit_songs(song_seeds, num)
         queue.extend(new_songs)
