@@ -1,0 +1,191 @@
+@charset "UTF-8";
+img, object, embed, video {
+	max-width: 100%;
+}
+/* IE 6 does not support max-width so default to width 100% */
+.ie6 img {
+	width:100%;
+}
+* {
+	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif
+}
+html,body {
+	background-color: #222326;
+	min-height: 100%;
+	height: 100%;
+	min-width: 100%;
+	overflow-y: scroll;
+	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	overflow: none;
+}
+@font-face {
+    font-family: Avenir;
+    src: url("/static/fonts/AvenirBook.otf")
+}
+ul
+{
+list-style-type: none;
+}
+.query {
+	height: 30px;
+	width: 90%;
+	border-radius: 6px;
+	border: 1px #999 solid;
+	font-size: 16px;
+	padding-left: 10px;
+	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif;
+	text-overflow: ellipsis;
+  	white-space: nowrap;
+	padding-right: 7px;
+}
+.query:focus {
+	border: 1px #FC2558 solid;
+	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif
+}
+.queue {
+	overflow-y: scroll;
+	height: calc(100vh - 200px);
+}
+.results {
+	overflow-y: scroll;
+	height: calc(100vh - 200px);
+}
+.title {
+	color: #FC2558;
+	font-family: Avenir, Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 21px;
+	text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.content {
+	width: 100%;
+	background-color: #37393E;
+}
+.row {
+	width: 100%;
+	background-color: #37393E;
+	height: 10%;
+	margin-top: 5px;
+	padding-left: 7px;
+	padding-top: 7px;
+	padding-right: 7px;
+	margin-left: 0;
+}
+.artwork {
+	height: 98%;
+	width: auto;
+	float: left;
+	display: inline;
+	margin-right: 7px;
+	user-select: none;
+}
+.song_name {
+	color: #F2F2F2;
+	font-size: 21px;
+	width: auto;
+	overflow: hidden;
+	padding-right: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.song_info {
+	color: #F2F2F2;
+	font-size: 17px;
+	width: auto;
+	margin-top: 2px;
+	overflow: auto;
+	padding-right: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.extra {
+	margin-top: 1px;
+}
+.uvote {
+	margin-top: 3px;
+	width: 20px;
+	height: auto;
+	user-select: none;
+}
+.dvote {
+	margin-top: 3px;
+	width: 20px;
+	height: auto;
+	margin-left: 8px;
+	user-select: none;
+}
+.duration {
+	color: #F2F2F2;
+	font-size: 16px;
+	margin-left: 10px;
+	margin-top: 2px;
+	overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+	display: inline;
+}
+.year {
+	color: #F2F2F2;
+	font-size: 16px;
+	margin-left: 10px;
+	margin-top: 2px;
+	overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+	display: inline;
+}
+.current {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+	background-color: #37393E;
+	height: 125px;
+	margin-top: 5px;
+	padding-left: 7px;
+	margin-left: 0;
+}
+
+progress {appearance: none; -moz-appearance: none; -webkit-appearance: none; user-select: none;}
+progress { color: #FC2558; height: 5px; margin-top: -6px; user-select: none;}
+progress::-moz-progress-bar { background: #FC2558; height: 5px; margin-top: -6px; user-select: none; }/* Firefox */
+progress::-webkit-progress-value { background: #FC2558; height: 5px; margin-top: -6px; user-select: none;}/* Chrome */
+
+.progcontainer{
+	display: inline;
+	width: 60%;
+}
+.current_time {
+	color: #F2F2F2;
+	display: inline;
+	margin-right: 3px;
+	padding-top: 3px;
+}
+.total_time {
+	color: #F2F2F2;
+	display: inline;
+	margin-left: 3px;
+}
+.addition {
+	width: 22px;
+	float: right;
+	margin-right: 15px;
+	display: inline;
+}
+.addition:hover {
+	cursor: pointer;
+}
+.inactive {
+	display: none;
+}
+.mainlogo {
+	margin: 0 auto;
+	text-align: center;
+}
+.nostyle, .nostyle:hover, .nostyle:visited, .nostyle:link, .nostyle:active
+{
+    text-decoration: none;
+		color: #f2f2f2;
+		width: 100%;
+}
