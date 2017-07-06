@@ -31,5 +31,9 @@ Upvoting or downvoting can impact the order of songs that are played, or if a so
 
 ## Our Team
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
 ## Acknowlegments
 * Hats off to the good folks at HackBerry Lab- Zane and Chris- for good advice, good times, and good 3D Printers
