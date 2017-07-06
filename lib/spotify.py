@@ -68,18 +68,20 @@ def create_song(track):
     album_name = data['album']['name']
     duration = data['duration_ms']
     explicit = True
-    valence = data['valence']
-    energy = data['energy']
-    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit, valence, energy)
+    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit)
 
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])
     response = get_request(recommendations_uri + songs + '&limit=' + str(num))
     data = response.json()
     return [create_song(track_obj).to_dict() for track_obj in data['tracks']]
+<<<<<<< HEAD
 
 def get_medians(seeds):
     median_valence = statistics.median(song['valence'] for song in seeds)
     median_energy = statistics.median(song['energy'] for song in seeds)
     response = '&target_valence=' + median_valence + '&target_energy' + median_energy
     return response
+=======
+    
+>>>>>>> 7904a93073e898f4aa4f145fdfec2cc0cae7b5d2
