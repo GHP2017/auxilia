@@ -33,25 +33,21 @@ m = Mouse()
 g = GPIOInteractor()
 g.set_button_callback(toggle_play_pause)
 song_url = 'http://127.0.0.1:5000/get_next_song'
-response = http.get(song_url)
 
 def get_next_song():
-    ## TODO:
-    # add error handling here
     response = http.get(song_url)
-    print(response.text)
-    return response.json()
+    data = response.json()
+    while 'error' in data:
+        print(data['error'])
+        time.sleep(10)
+        response = http.get(song_url)
+        data = response.json()
+    return data
 
 
-        
+
 # establish a connection
-"""
-while response.status_code != 200:
-    time.sleep(10)
-    response = http.get(song_url)
-"""
-print(response.text)
-data = response.json()
+data = get_next_song()
 duration = data['duration'] / 1000.0
 start_time = time.time()
 m.play_song(data['track_id'])
