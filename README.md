@@ -30,5 +30,5 @@ Upvoting or downvoting can impact the order of songs that are played, or if a so
 
 ## Our Team
 
-## Acknowlegements
+## Acknowlegments
 * Hats off to the good folks at HackBerry Lab- Zane and Chris- for good advice, good times, and good 3D Printers
