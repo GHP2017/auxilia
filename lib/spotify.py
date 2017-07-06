@@ -71,7 +71,9 @@ def create_song(track, explicit=True):
 
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])
-    response = get_request(recommendations_uri + songs + '&limit=' + str(num))
+    url = recommendations_uri + songs + '&limit=' + str(num)
+    print(url)
+    response = get_request(url)
     data = response.json()
     return [create_song(track_obj, explicit=False).to_dict() for track_obj in data['tracks']]
 
