@@ -1,4 +1,4 @@
-# spotify_dj
+# Auxilia
 A server that runs on a Raspberry Pi enabling several users to enjoy a shared music experience.
 
 ## Features
@@ -13,7 +13,7 @@ These instructions will walk you through the steps needed to begin the experienc
 
 ### Setup
 Let's connect speaker's Raspberry Pi to the same network as the users' devices. 
-The Raspberry Pi will host the server running the spotify_dj web app, so you'll need to go to this address:
+The Raspberry Pi will host the server running the Auxilia web app, so you'll need to go to this address:
 *coming soon*
 
 ### Having a Good Time
