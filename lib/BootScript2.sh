@@ -1,3 +1,3 @@
 #! /bin/sh
-sleep 30
+sleep 20
 sudo su pi -c "chromium-browser play.spotify.com"
