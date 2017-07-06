@@ -15,8 +15,10 @@ Let's connect speaker's Raspberry Pi to the same network as the users' devices.
 The Raspberry Pi will host the server running the spotify_dj web app, so you'll need to go to this address:
 *coming soon*
 
-
-### Deployment
+### Having a Good Time
+Here's how it works:
+After you search for a song and click "add," the queue automatically updates across all devices and reflects the change.
+Upvoting or downvoting can impact the order of songs that are played, or if a song (added by algorithm) accrues enough downvotes, it will delete itself.
 
 ## FAQ
 
@@ -29,3 +31,4 @@ The Raspberry Pi will host the server running the spotify_dj web app, so you'll 
 ## Our Team
 
 ## Acknowlegements
+* Hats off to the good folks at HackBerry Lab- Zane and Chris- for good advice, good times, and good 3D Printers
