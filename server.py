@@ -28,37 +28,15 @@ pause_uri = 'https://api.spotify.com/v1/me/player/pause'
 track_uri = 'https://api.spotify.com/v1/tracks/'
 search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
 
-## OAUTH2 
+ ## Main Pages
 
-@app.route("/callback")
-def callback():
-    code = request.args.get('code')
-    result = http.post(token_uri, data = {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': redirect_uri,
-        'client_id': client_id,
-        'client_secret': client_secret
-    })
-    data = result.json()
-    
-    access_token = data['access_token']
-    refresh_token = data['refresh_token']
-    
-    cache.set('access_token', access_token)
-    cache.set('refresh_token', refresh_token)
+@app.route('/')
+def play_page():
+    return app.send_static_file('play.html')
 
-    return redirect('/static/play.html')
-    
-@app.route("/authenticate")
-def authenticate():
-    try:
-        return redirect(authorize_uri + '?client_id=' + client_id + \
-                    '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
-    except Exception as e:
-        return ('authenticate() threw ' +str(e))
 
-## Queue 
+
+## Queue
 
 @app.route("/add_song")
 def add_song():
@@ -83,6 +61,7 @@ def get_next_song():
         return('get_next_song() threw ' + str(e))
 
 ## HTTP Error Handling
+"""
 @app.errorhandler(403)
 def forbidden():
     return render_template('403.html')
@@ -94,6 +73,8 @@ def page_not_found():
 @app.errorhandler(500) #must turn off debugging mode in order to use this custom error handling
 def internal_error(error):
     return '500 Error'
+
+"""
 
 ## Playback Endpoints
 
@@ -119,18 +100,19 @@ def client_connected(data):
 def searchbar_changed(data):
     print('searchbar changing...')
     print('searching for ' + data['query'])
-    query = data['query'].replace(' ', '+')
-    response = get_request(search_uri + query)
-    songs = []
-    for track_obj in response.json()['tracks']['items']:
-        songs.append(create_song(track_obj))
-    serialized_songs = [song.to_dict() for song in songs]
-    emit('suggestions_changed', serialized_songs)
+    if data['query'] != '':
+        query = data['query'].replace(' ', '+')
+        response = get_request(search_uri + query)
+        songs = []
+        for track_obj in response.json()['tracks']['items']:
+            songs.append(create_song(track_obj))
+        serialized_songs = [song.to_dict() for song in songs]
+        emit('suggestions_changed', serialized_songs)
 
-@socketio.on('thumbs_change')
+@socketio.on('thumbs_changed')
 def thumbs_change(data):
     print('song got thumbs up or thumbs down')
-    queue.thumbs_change(data['track_id'], data['change'])
+    queue.thumbs_change(data['track_id'], data['change'], decrement=data['decrement'])
     queue_change()
 
 def queue_change():
@@ -138,6 +120,36 @@ def queue_change():
     
 def currently_playing_change(song):
     socketio.emit('currently_playing_changed', song.to_dict())
+
+## OAUTH2 
+
+@app.route("/callback")
+def callback():
+    code = request.args.get('code')
+    result = http.post(token_uri, data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret
+    })
+    data = result.json()
+    
+    access_token = data['access_token']
+    refresh_token = data['refresh_token']
+    
+    cache.set('access_token', access_token)
+    cache.set('refresh_token', refresh_token)
+
+    return redirect('/')
+    
+@app.route("/authenticate")
+def authenticate():
+    try:
+        return redirect(authorize_uri + '?client_id=' + client_id + \
+                    '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
+    except Exception as e:
+        return ('authenticate() threw ' +str(e))
 
 ## Testing only
 

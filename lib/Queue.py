@@ -14,7 +14,7 @@ class Queue:
         index = None
         for i, song_obj in enumerate(queue):
             if not song_obj['explicit']:
-                index = i
+                index = i + 1
                 break
 
         if index is None:
@@ -65,7 +65,7 @@ class Queue:
         new_songs = get_implicit_songs(song_seeds, num)
         queue.extend(new_songs)
 
-    def thumbs_change(self, track_id, change):
+    def thumbs_change(self, track_id, change, decrement=False):
         queue = self.instantiate_queue()
         
         changing_song = None
@@ -74,20 +74,31 @@ class Queue:
                 changing_song = song
                 break
 
-        if change is 'up':
+        if change == 'up':
             if not changing_song['explicit']:
                 changing_song['explicit'] = True
-            changing_song['upvotes'] += 1
+            if decrement:
+                changing_song['upvotes'] += -1
+            else:
+                changing_song['upvotes'] += 1
+        else:
+            if decrement:
+                changing_song['downvotes'] += -1
+            else:
+                changing_song['downvotes'] += 1
+
+        self.calculateScore(queue)
+        self.sortSongs(queue)
 
         self.cache.set('queue', queue)
 
     def sortSongs(self, queue):
-        queue.sort(key = lambda x: x['score'])
+        queue.sort(key = lambda x: x['score'], reverse=True)
 
     def calculateScore(self, queue):
         for song in queue:
             if song['explicit']:
-                song['score'] = song['age']**1.5 + song['upvotes'] - song['downvotes']
+                song['score'] = 3 * song['age'] + 2 * song['upvotes'] - 2 * song['downvotes']
             else:
                 song['score'] = 0
         
