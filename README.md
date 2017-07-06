@@ -6,6 +6,7 @@ A server that runs on a Raspberry Pi enabling several users to enjoy a shared mu
 * Keep The Party Going -- when the queue drops low, songs that fit the mood are added to the playlist, so you don't have to glue yourself to your phone
 * User feedback -- Thumbs up/down to influence the flow of the queue
 * Physical volume and play/pause control
+* Durable speaker case
 
 ## Getting Started
 These instructions will walk you through the steps needed to begin the experience.
