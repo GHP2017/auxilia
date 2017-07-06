@@ -25,7 +25,7 @@ html,body {
 }
 @font-face {
     font-family: Avenir;
-    src: url("static/fonts/AvenirBook.otf")
+    src: url("/static/fonts/AvenirBook.otf")
 }
 ul
 {
@@ -57,7 +57,7 @@ list-style-type: none;
 	height: calc(100vh - 25%);
 }
 .title {
-	color: #EB4533;
+	color: #FC2558;
 	font-family: Avenir, Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 21px;
 	text-overflow: ellipsis;
@@ -156,9 +156,9 @@ list-style-type: none;
 }
 
 progress {appearance: none; -moz-appearance: none; -webkit-appearance: none; user-select: none;}
-progress { color: #EB4533; height: 5px; margin-top: -6px; user-select: none;}
-progress::-moz-progress-bar { background: #EB4533; height: 5px; margin-top: -6px; user-select: none; }/* Firefox */
-progress::-webkit-progress-value { background: #EB4533; height: 5px; margin-top: -6px; user-select: none;}/* Chrome */
+progress { color: #FC2558; height: 5px; margin-top: -6px; user-select: none;}
+progress::-moz-progress-bar { background: #FC2558; height: 5px; margin-top: -6px; user-select: none; }/* Firefox */
+progress::-webkit-progress-value { background: #FC2558; height: 5px; margin-top: -6px; user-select: none;}/* Chrome */
 
 .progcontainer{
 	display: inline;

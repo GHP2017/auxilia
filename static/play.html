@@ -5,8 +5,8 @@
 	<meta charset="UTF-8">
 	<title>DJ Music</title>
   <link rel="stylesheet" type="text/css">
-	<link href="css/layout.css" rel="stylesheet" type="text/css">
-	<link href="css/boilerplate.css" rel="stylesheet" type="text/css">
+	<link href="static/css/layout.css" rel="stylesheet" type="text/css">
+	<link href="static/css/boilerplate.css" rel="stylesheet" type="text/css">
 	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body bgcolor="#222326">
@@ -29,24 +29,30 @@
 	<div v-for="(song, index) in queue">
   <div class="row">
   	<img class="artwork" v-bind:src="song.album_uri" alt="artwork"/>
-    <div class="song_name">{{song.name}}</div>
+    <div v-if="song.explicit">
+			<div class="song_name">{{song.name}}</div>
+		</div>
+		<div v-else>
+			<em><div class="song_name">{{song.name}}</div></em>
+		</div>
+		
     <div class="song_info">{{song.artist}} - {{song.album_name}}</div>
     <table class="extra">
     	<tr>
       	<td>
 			<div v-if="song.was_upvoted">
-				<img id="upvote" class="uvote" src="images/up_active.png" alt="Upvoted" onmouseover="this.style.cursor='pointer'" v-on:click="upvote(index)" />
+				<img id="upvote" class="uvote" src="static/images/up_active.png" alt="Upvoted" onmouseover="this.style.cursor='pointer'" v-on:click="upvote(index)" />
 			</div>
 			<div v-else>
-				<img id="upvote" class="uvote" src="images/up.png" alt="Up Vote" onmouseover="this.style.cursor='pointer'" v-on:click="upvote(index)" />	
+				<img id="upvote" class="uvote" src="static/images/up.png" alt="Up Vote" onmouseover="this.style.cursor='pointer'" v-on:click="upvote(index)" />	
 			</div>
 			</td>
         <td>
 			<div v-if="song.was_downvoted">
-				<img id="downvote" class="dvote" src="images/down_active.png" alt="Downvoted" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />
+				<img id="downvote" class="dvote" src="static/images/down_active.png" alt="Downvoted" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />
 			</div>
 			<div v-else>
-				<img id="downvote" class="dvote" src="images/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />	
+				<img id="downvote" class="dvote" src="static/images/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />	
 			</div>
         <td><div class="duration">Duration: {{song.duration}} </div></td>
      </tr>
@@ -62,9 +68,9 @@
     <div class="song_name">{{song.name}}</div>
 		<!--> ADD IF ELSE HERE </-->
 		<v-touch v-on:tap="submit_song(song.track_id)" >
-    	<img v-bind:id="'song' + index" src="images/add.png" class="addition" alt="add"/>
+    	<img v-bind:id="'song' + index" src="static/images/add.png" class="addition" alt="add"/>
 		</v-touch>
-		<img src="images/delete.png" class="addition" alt="del"/>
+		<img src="static/images/delete.png" class="addition" alt="del"/>
     <div class="song_info" style="margin-top: 5px;">{{song.artist}} - {{song.album_name}}</div>
     <div style="margin-top: 5px;">
       <div class="duration" style="margin-left: 0px;">Duration: {{song.duration}}</div>
@@ -78,11 +84,11 @@
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous">
 	</script>
-	<script type="text/javascript" src="js/vue.js"></script>
-	<script type="text/javascript" src="js/socket.io.min.js"></script>
-	<script type="text/javascript" src="js/foundation.min.js"></script>
+	<script type="text/javascript" src="static/js/vue.js"></script>
+	<script type="text/javascript" src="static/js/socket.io.min.js"></script>
+	<script type="text/javascript" src="static/js/foundation.min.js"></script>
 	<script src="https://hammerjs.github.io/dist/hammer.js"></script>
-	<script type="text/javascript" src="js/vue-touch.min.js"></script>
-	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript" src="static/js/vue-touch.min.js"></script>
+	<script type="text/javascript" src="static/js/app.js"></script>
 </body>
 </html>

@@ -9,8 +9,20 @@ socket.on('queue_changed', function(data) {
     console.log('the queue is updating')
     for (i = 0; i < data.length; i ++) {
         song = data[i]
-        song['was_upvoted'] = false;
-        song['was_downvoted'] = false;
+        matched = false
+        for (j = 0; j < app.queue.length; j ++) {
+            if (song.track_id == app.queue[j].track_id) {
+                matched = true
+                song['was_upvoted'] = app.queue[j]['was_upvoted'];
+                song['was_downvoted'] = app.queue[j]['was_downvoted'];
+                break;
+            }
+        }
+        if (!matched) {
+            song['was_upvoted'] = false;
+            song['was_downvoted'] = false;
+        }
+        
     }
     app.queue = data;
 });
@@ -63,24 +75,34 @@ app = new Vue({
         },
         upvote: function (index) {
             song = this.queue[index]
-            console.log(song)
+            console.log('upvote')
             if (song['was_upvoted']) {
                 song['was_upvoted'] = false
+                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: true})
             }
             else {
                 song['was_upvoted'] = true
-                song['was_downvoted'] = false
+                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: false})
+                if (song['was_downvoted']) {
+                    song['was_downvoted'] = false
+                    socket.emit('thumbs_changed', {track_id: song.track_id, change: 'down', decrement: true})
+                }
             }
         },
         downvote: function (index) {
             song = this.queue[index]
-            console.log(song)
+            console.log('downvote')
             if (song['was_downvoted']) {
                 song['was_downvoted'] = false
+                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'down', decrement: true})
             }
             else {
                 song['was_downvoted'] = true
-                song['was_upvoted'] = false
+                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'down', decrement: false})
+                if (song['was_upvoted']) {
+                    song['was_upvoted'] = false
+                    socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: true})
+                }
             }
         }
     }
