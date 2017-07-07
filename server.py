@@ -35,10 +35,16 @@ search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
  ## Main Pages
 
 @app.route('/')
+def landing():
+    return app.send_static_file('landing.html')
+
+@app.route('/play')
 def play_page():
     return app.send_static_file('play.html')
 
-
+@app.route('/admin')
+def admin():
+    return app.send_static_file('admin.html')
 
 ## Queue
 

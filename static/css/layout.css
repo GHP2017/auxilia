@@ -9,14 +9,11 @@ img, object, embed, video {
 * {
 	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif
 }
-#song {
-
-}
-
 html,body {
 	background-color: #222326;
 	min-height: 100%;
 	height: 100%;
+	min-width: 100%;
 	overflow-y: scroll;
 	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif;
 	margin: 0;
@@ -34,27 +31,26 @@ list-style-type: none;
 .query {
 	height: 30px;
 	width: 90%;
-	border-radius: 5px;
+	border-radius: 6px;
 	border: 1px #999 solid;
 	font-size: 16px;
 	padding-left: 10px;
 	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif;
 	text-overflow: ellipsis;
-  white-space: nowrap;
+  	white-space: nowrap;
+	padding-right: 7px;
 }
 .query:focus {
-	border: 1px #3079FB solid;
+	border: 1px #FC2558 solid;
 	font-family: Avenir, Gotham, Helvetica, Arial, sans-serif
 }
 .queue {
 	overflow-y: scroll;
-	max-height: 100%;
-	height: auto;
-	
+	height: calc(100vh - 200px);
 }
 .results {
 	overflow-y: scroll;
-	height: calc(100vh - 25%);
+	height: calc(100vh - 200px);
 }
 .title {
 	color: #FC2558;
@@ -68,19 +64,17 @@ list-style-type: none;
 	background-color: #37393E;
 }
 .row {
-	width: 98%;
+	width: 100%;
 	background-color: #37393E;
-	height: 12%;
+	height: 10%;
 	margin-top: 5px;
 	padding-left: 7px;
-	overflow-x: hidden;
 	padding-top: 7px;
-	padding-right: 0px;
+	padding-right: 7px;
 	margin-left: 0;
-	padding-bottom: 7px;
 }
 .artwork {
-	height: 80px;
+	height: 98%;
 	width: auto;
 	float: left;
 	display: inline;
@@ -91,7 +85,6 @@ list-style-type: none;
 	color: #F2F2F2;
 	font-size: 21px;
 	width: auto;
-	max-width: 80%;
 	overflow: hidden;
 	padding-right: 7px;
   text-overflow: ellipsis;
@@ -101,9 +94,8 @@ list-style-type: none;
 	color: #F2F2F2;
 	font-size: 17px;
 	width: auto;
-	max-width: 80%;
 	margin-top: 2px;
-	overflow: hidden;
+	overflow: auto;
 	padding-right: 7px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -145,14 +137,14 @@ list-style-type: none;
 	display: inline;
 }
 .current {
-  width: 98%;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 	background-color: #37393E;
-	height: 115px;
+	height: 125px;
+	margin-top: 5px;
 	padding-left: 7px;
-	padding-bottom: 7px;
-	padding-top: 5px;
 	margin-left: 0;
-	margin-top: 7px;
 }
 
 progress {appearance: none; -moz-appearance: none; -webkit-appearance: none; user-select: none;}
@@ -186,4 +178,71 @@ progress::-webkit-progress-value { background: #FC2558; height: 5px; margin-top:
 }
 .inactive {
 	display: none;
+}
+.mainlogo {
+	margin: 0 auto;
+	text-align: center;
+}
+.nostyle, .nostyle:hover, .nostyle:visited, .nostyle:link, .nostyle:active
+{
+    text-decoration: none;
+		color: #f2f2f2;
+		width: 100%;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #fc2558;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #fc2558;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
