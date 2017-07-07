@@ -38,3 +38,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowlegments
 * Hats off to the good folks at HackBerry Lab- Zane and Chris- for good advice, good times, and good 3D Printers
+* Thanks to Tim for kind suggestions and biting sarcasm
