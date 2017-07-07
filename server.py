@@ -14,6 +14,7 @@ socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
 cache.set('paused_time', 0)
 cache.set('is_paused', 'False')
+cache.set('refresh_token', 'AQBaMZ434eYXxTv8aXProOYllKxIIhT3QmO27-Wrie4EhzD1jZYodny3_G2bc0CMUigTc79ZQ_EK5FNJqImG52tPvu0kO6C13NFTZXUVW2N6pLKAZOlC3g9tWUNL302gkvw')
 
 queue = Queue(cache)
 
