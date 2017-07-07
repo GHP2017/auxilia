@@ -12,6 +12,7 @@ pause_time = 0
 paused_at = time.time()
 pressed_at = time.time()
 skip = False
+playback_url = 'http://127.0.0.1:5000/playback?state='
 # called whenever the physical pause/play button is pressed
 def toggle_play_pause():
     global playing
@@ -23,11 +24,13 @@ def toggle_play_pause():
     pressed_at = time.time()
     if(playing):
         m.pause() 
+        http.get(playback_url + 'paused')
         playing = False
         paused_at = time.time()
         s.play_pause_tone()
     elif(not playing):
         m.play()
+        http.get(playback_url + 'resume')
         playing = True
         pause_time += time.time() - paused_at
         print("paused for" + str(time.time() - paused_at))
