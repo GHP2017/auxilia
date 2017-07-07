@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<title>DJ Music</title>
   <link rel="stylesheet" type="text/css">
-	<link href="static/css/layout.css" rel="stylesheet" type="text/css">
+	<link href="static/css/play.css" rel="stylesheet" type="text/css">
 	<link href="static/css/boilerplate.css" rel="stylesheet" type="text/css">
 	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 </head>
@@ -14,13 +14,13 @@
 		<div style="text-align: center; margin-top: 7px;"><input type="search" v-model="search" @keyup.some_key="change" placeholder="Search for Songs to Add" class="query"></div>
 		 <div class="current">
   	<div class="title" style="margin-top: 0px; margin-bottom: 5px;">Playing Now:</div>
-  	<img class="artwork" v-bind:src="currently_playing.album_uri" alt="artwork"/>
-    <div class="song_name">{{currently_playing.name}}</div>
-    <div class="song_info" style="margin-top: 3px;">{{currently_playing.artist}} - {{currently_playing.album_name}}</div>
+  	<img class="artwork" v-bind:src="curr_album_uri" alt="artwork"/>
+    <div class="song_name">{{curr_name}}</div>
+    <div class="song_info" style="margin-top: 3px;">{{curr_artist}} - {{curr_album_name}}</div>
     <div style="width: 100%; margin-top: 4px;">
-      <div class="current_time">{{currently_playing.curr_time}}</div>
-      <div class="progcontainer"><progress v-bind:value="currently_playing.curr_time" v-bind:max="currently_playing.duration / 1000" style="width: 49%;"></progress></div>
-      <div class="total_time">{{currently_playing.duration / 1000}}</div>
+      <div class="current_time">{{curr_time_display}}</div>
+      <div class="progcontainer"><progress v-bind:value="curr_time" v-bind:max="curr_duration / 1000" style="width: 49%;"></progress></div>
+      <div class="total_time">{{curr_duration_display}}</div>
     </div>
   </div>
 	<div v-if="search.length == 0">
@@ -54,7 +54,7 @@
 			<div v-else>
 				<img id="downvote" class="dvote" src="static/images/down.png" alt="Down Vote" onmouseover="this.style.cursor='pointer'" v-on:click="downvote(index)" />	
 			</div>
-        <td><div class="duration">Duration: {{song.duration}} </div></td>
+        <td><div class="duration">Duration: {{format_duration(song.duration)}} </div></td>
      </tr>
     </table>
   </div>
@@ -66,14 +66,12 @@
   <div class="row">
   	<img class="artwork" v-bind:src="song.album_uri" alt="artwork"/>
     <div class="song_name">{{song.name}}</div>
-		<!--> ADD IF ELSE HERE </-->
 		<v-touch v-on:tap="submit_song(song.track_id)" >
     	<img v-bind:id="'song' + index" src="static/images/add.png" class="addition" alt="add"/>
 		</v-touch>
-		<img src="static/images/delete.png" class="addition" alt="del"/>
     <div class="song_info" style="margin-top: 5px;">{{song.artist}} - {{song.album_name}}</div>
     <div style="margin-top: 5px;">
-      <div class="duration" style="margin-left: 0px;">Duration: {{song.duration}}</div>
+      <div class="duration" style="margin-left: 0px;">Duration: {{format_duration(song.duration)}}</div>
     </div>
   </div>
 	</div>
@@ -87,7 +85,9 @@
 	<script type="text/javascript" src="static/js/vue.js"></script>
 	<script type="text/javascript" src="static/js/socket.io.min.js"></script>
 	<script type="text/javascript" src="static/js/foundation.min.js"></script>
-	<script src="https://hammerjs.github.io/dist/hammer.js"></script>
+	<script type="text/javascript" src="static/js/axios.min.js"></script>
+	<script type="text/javascript" src="static/js/lodash.min.js"></script>
+	<script type="text/javascript" src="static/js/hammer.js"></script>
 	<script type="text/javascript" src="static/js/vue-touch.min.js"></script>
 	<script type="text/javascript" src="static/js/app.js"></script>
 </body>

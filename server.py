@@ -5,12 +5,17 @@ from lib.Song import Song
 from lib.spotify import get_request, create_song
 import requests as http
 import json
+from time import time
 import redis as rd
 from base64 import b64encode
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
+cache.set('paused_time', 0)
+cache.set('is_paused', 'False')
+cache.set('refresh_token', 'AQBaMZ434eYXxTv8aXProOYllKxIIhT3QmO27-Wrie4EhzD1jZYodny3_G2bc0CMUigTc79ZQ_EK5FNJqImG52tPvu0kO6C13NFTZXUVW2N6pLKAZOlC3g9tWUNL302gkvw')
+
 queue = Queue(cache)
 
 client_id = 'f3b0c51df1124cc985fd4012b6d55d95'
@@ -31,10 +36,16 @@ search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
  ## Main Pages
 
 @app.route('/')
+def landing():
+    return app.send_static_file('landing.html')
+
+@app.route('/play')
 def play_page():
     return app.send_static_file('play.html')
 
-
+@app.route('/admin')
+def admin():
+    return app.send_static_file('admin.html')
 
 ## Queue
 
@@ -57,6 +68,18 @@ def get_next_song():
     except IndexError as e:
         return json.dumps({'error': 'No songs in the queue'})
 
+
+## Playback
+
+@app.route('/playback')
+def playback():
+    state = request.args.get('state')
+    if state == 'paused':
+        paused()
+    elif state == 'resume':
+        resume()
+    return json.dumps({'msg': 'playback change acknowledged'})
+
 ## HTTP Error Handling
 """
 @app.errorhandler(403)
@@ -73,25 +96,19 @@ def internal_error(error):
 
 """
 
-## Playback Endpoints
-
-@app.route("/resume")
-def resume():
-    print(get_request(play_uri, call_type='PUT'))
-    return 'success'
-
-@app.route("/pause")
-def pause():
-    print('GOT PAUSE')
-    print(get_request(pause_uri, call_type='PUT'))
-    return 'success'
-
 ## Websocket Events
 
 @socketio.on('client_connected')
 def client_connected(data):
     print('a client connected')
     emit('queue_changed', queue.serialize())
+    history = queue.instantiate_history()
+    if len(history) > 0:
+        song_data = history[-1]
+        emit('mid_currently_playing', song_data)
+    if cache.get('is_paused').decode('utf-8') == 'True':
+        pause_time = int(cache.get('paused_time').decode('utf-8'))
+        socketio.emit('paused', pause_time)
 
 @socketio.on('searchbar_changed')
 def searchbar_changed(data):
@@ -117,6 +134,15 @@ def queue_change():
     
 def currently_playing_change(song):
     socketio.emit('currently_playing_changed', song.to_dict())
+
+def paused():
+    pause_time = time()
+    cache.set('paused', pause_time)
+    socketio.emit('paused', pause_time)
+
+def resume():
+    cache.set('is_paused', 'False')
+    socketio.emit('resume', {})
 
 ## OAUTH2 
 

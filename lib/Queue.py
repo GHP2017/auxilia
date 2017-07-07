@@ -1,6 +1,8 @@
 from lib.Song import Song
 from lib.spotify import get_implicit_songs
 import ast
+from time import time
+from copy import deepcopy
 
 class Queue:
 
@@ -27,7 +29,9 @@ class Queue:
         song_data = queue.pop(0)
 
         history = self.instantiate_history()
-        history.append(song_data)
+        history_song_data = deepcopy(song_data)
+        history_song_data['time_played'] = time() + 5
+        history.append(history_song_data)
 
         if len(queue) < 5:
             self.addImplicit(queue, history)

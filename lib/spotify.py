@@ -24,18 +24,21 @@ def get_request(url, call_type='GET', body=None):
             print(response.status_code)
             print(response.text)
             refresh_access_token()
+            access_token = cache.get('access_token').decode('utf-8')
             response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'POST':
         response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
         print(response.text)
         if int(response.status_code) >= 400:
             refresh_access_token()
+            access_token = cache.get('access_token').decode('utf-8')
             response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'PUT':
         response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
         print(response.text, response.status_code)
         if int(response.status_code) >= 400:
             refresh_access_token()
+            access_token = cache.get('access_token').decode('utf-8')
             response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
 
     return response
@@ -47,10 +50,13 @@ def refresh_access_token():
         'refresh_token': cache.get('refresh_token').decode('utf-8')
     }
     string = (client_id + ':' + client_secret).encode('utf-8')
-    encoded_string = str(b64encode(string))
-    response = http.post(token_uri, data=body, headers={'Authorization': 'Basic ' + encoded_string})
+    encoded_string = b64encode(string).decode('utf-8')
+    response = http.post(token_uri, data=body, headers={
+        'Authorization': 'Basic ' + encoded_string,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    })
     data = response.json()
-    
+    print(response.request.path_url, response.request.headers)
     cache.set('access_token', data['access_token'])
 
 # takes either a track id or a track object as returned by the spotify api
