@@ -69,7 +69,6 @@
 		<v-touch v-on:tap="submit_song(song.track_id)" >
     	<img v-bind:id="'song' + index" src="static/images/add.png" class="addition" alt="add"/>
 		</v-touch>
-		<img src="static/images/delete.png" class="addition" alt="del"/>
     <div class="song_info" style="margin-top: 5px;">{{song.artist}} - {{song.album_name}}</div>
     <div style="margin-top: 5px;">
       <div class="duration" style="margin-left: 0px;">Duration: {{format_duration(song.duration)}}</div>
@@ -86,6 +85,8 @@
 	<script type="text/javascript" src="static/js/vue.js"></script>
 	<script type="text/javascript" src="static/js/socket.io.min.js"></script>
 	<script type="text/javascript" src="static/js/foundation.min.js"></script>
+	<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
 	<script src="https://hammerjs.github.io/dist/hammer.js"></script>
 	<script type="text/javascript" src="static/js/vue-touch.min.js"></script>
 	<script type="text/javascript" src="static/js/app.js"></script>

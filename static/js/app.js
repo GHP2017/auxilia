@@ -83,9 +83,9 @@ app = new Vue({
         curr_time_display: ''
     },
     watch: {
-        search: function () {
+        search: _.debounce (function () {
             socket.emit('searchbar_changed', {query: this.search})
-        },
+        }, 750),
         curr_time: function () {
             app.curr_time_display = this.format_duration(this.curr_time * 1000)
         },
