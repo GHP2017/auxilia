@@ -28,6 +28,7 @@ Upvoting or downvoting can impact the order of songs that are played, or if a so
 * [Flask](http://flask.pocoo.org/) - The web framework used
 * [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/) - Websockets
 * [Spotify Web API](https://developer.spotify.com/web-api/) - Retrieves data from Spotify's catalog
+* [Requests](http://docs.python-requests.org/en/latest/index.html) - HTTP for Humans
 
 ## Our Team
 
