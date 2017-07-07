@@ -34,11 +34,33 @@ socket.on('suggestions_changed', function(data) {
 
 socket.on('currently_playing_changed', function (data) {
     console.log('next song')
-    data['curr_time'] = 0
-    app.currently_playing = data
+    setTimeout(update_currently_playing, 5000, data, 0)
 })
 
+socket.on('mid_currently_playing', function (data) {
+    curr_time = Date.now() - data['time_played'] * 1000
+    curr_time /= 1000
+    update_currently_playing(data, curr_time)
+})
 
+update_currently_playing = function (data, curr_time ) {
+    app.curr_album_name = data['album_name']
+    app.curr_album_uri = data['album_uri']
+    app.curr_name = data['name']
+    app.curr_artist = data['artist']
+    app.curr_duration = data['duration']
+    app.curr_duration_display = ''
+    app.curr_time = curr_time
+    app.curr_time_display = ''
+}
+
+socket.on('paused', function(data) {
+    app.paused = true
+});
+
+socket.on('resume', function(data) {
+    app.paused = false
+});
 
 submit_song_url = '/add_song?song=spotify:track:'
 
@@ -50,17 +72,25 @@ app = new Vue({
         queue: [],
         search: '',
         suggestions: [],
-        currently_playing: {
-            album_name: '',
-            album_uri: '',
-            name: '',
-            artist: '',
-            duration: '',
-        }
+        paused: false,
+        curr_album_name: '',
+        curr_album_uri: '',
+        curr_name: '',
+        curr_artist: '',
+        curr_duration: 0,
+        curr_duration_display: '',
+        curr_time: 0,
+        curr_time_display: ''
     },
     watch: {
         search: function () {
             socket.emit('searchbar_changed', {query: this.search})
+        },
+        curr_time: function () {
+            app.curr_time_display = this.format_duration(this.curr_time * 1000)
+        },
+        curr_duration: function () {
+            app.curr_duration_display = this.format_duration(this.curr_duration)
         }
     },
     methods: {
@@ -104,14 +134,23 @@ app = new Vue({
                     socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: true})
                 }
             }
+        },
+        format_duration: function(ms) {
+            seconds = ms / 1000
+            minutes = Math.floor(seconds / 60)
+            seconds = Math.round(seconds % 60)
+            if (seconds < 10) {
+                seconds = '0' + seconds
+            }
+            return minutes + ':' + seconds
         }
     }
 });
 
 
 update_progress_bar = function () {
-    if (app.currently_playing.curr_time < app.currently_playing.duration / 1000) {
-        app.currently_playing.curr_time += 1
+    if (app.curr_time < app.curr_duration / 1000 && !app.paused) {
+        app.curr_time += 1
     }
 }
 setInterval(update_progress_bar, 1000)
