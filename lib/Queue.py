@@ -65,7 +65,6 @@ class Queue:
         if len(song_seeds) is 0:
             song_seeds = [fallback_song]
         
-        print(song_seeds)
         num = 5 - len(queue)
         new_songs = get_implicit_songs(song_seeds, num)
         queue.extend(new_songs)
