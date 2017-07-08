@@ -1,6 +1,12 @@
 
 socket = io.connect('http://' + document.domain + ':' + location.port);
 
+$.ajaxSetup({
+  xhrFields: {
+    withCredentials: true
+  }
+});
+
 socket.on('connect', function() {
     socket.emit('client_connected', {data: 'I\'m connected!'});
 });

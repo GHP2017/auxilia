@@ -1,19 +1,32 @@
-from flask import Flask, redirect, request, render_template
+from flask import Flask, redirect, request, render_template, session
 from flask_socketio import SocketIO, emit
-from lib.Queue import Queue
+from lib.Queue import Queue, OptionsConflict
 from lib.Song import Song
+import os
+from datetime import timedelta
 from lib.spotify import get_request, create_song
 import requests as http
 import json
 from time import time
 import redis as rd
+import ast
 from base64 import b64encode
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+app.permanent_session_lifetime = timedelta(hours=6)
+
 socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
+options = {
+    'safe_mode': 'False',
+    'downvotes_threshold': 3,
+    'max_individual_songs': 3
+}
+
 cache.set('paused_time', 0)
 cache.set('is_paused', 'False')
+cache.set('options', options)
 cache.set('refresh_token', 'AQBaMZ434eYXxTv8aXProOYllKxIIhT3QmO27-Wrie4EhzD1jZYodny3_G2bc0CMUigTc79ZQ_EK5FNJqImG52tPvu0kO6C13NFTZXUVW2N6pLKAZOlC3g9tWUNL302gkvw')
 
 queue = Queue(cache)
@@ -21,8 +34,8 @@ queue = Queue(cache)
 client_id = 'f3b0c51df1124cc985fd4012b6d55d95'
 client_secret = 'e54ca2e0bf394944a1247830443dba3c'
 
-redirect_uri = 'http://127.0.0.1:5000/callback'
-#redirect_uri = 'http://172.16.35.73:5000/callback'
+#redirect_uri = 'http://127.0.0.1:5000/callback'
+redirect_uri = 'http://172.16.49.80:5000/callback'
 #redirect_uri = 'https://example-django-app-dude0faw3.c9users.io/callback'
 
 authorize_uri = 'https://accounts.spotify.com/authorize'
@@ -43,6 +56,9 @@ def landing():
 @app.route('/play')
 def play_page():
     """Returns the play page"""
+    session.permanent = True
+    if 'songs_added' not in session:
+        session['songs_added'] = 0
     return app.send_static_file('play.html')
 
 @app.route('/admin')
@@ -55,8 +71,12 @@ def admin():
 @app.route("/add_song")
 def add_song():
     """Creates song object, adds to queue, and updates queue. Returns success upon completion."""
+    options = get_options()
+    if 'songs_added' in session:
+        if session['songs_added'] == 
+        session['songs_added'] += 1
+        print(session)
     track_id = request.args.get('song')
-    print(track_id)
     song_obj = create_song(track_id)
     queue.addSong(song_obj)
     queue_change()
@@ -120,7 +140,6 @@ def client_connected(data):
 @socketio.on('searchbar_changed')
 def searchbar_changed(data):
     """Searches for user's input in the searchbar, and creates results list"""
-    print('searchbar changing...')
     print('searching for ' + data['query'])
     if data['query'] != '':
         query = data['query'].replace(' ', '+')
@@ -134,7 +153,6 @@ def searchbar_changed(data):
 @socketio.on('thumbs_changed')
 def thumbs_change(data):
     """Changes queue when thumbs up/down."""
-    print('song got thumbs up or thumbs down')
     queue.thumbs_change(data['track_id'], data['change'], decrement=data['decrement'])
     queue_change()
 
@@ -188,6 +206,12 @@ def authenticate():
                     '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
     except Exception as e:
         return ('authenticate() threw ' +str(e))
+
+## Helper methods
+def get_options():
+    serialized_options = self.cache.get('options')
+    options = ast.literal_eval(serialized_options.decode('utf-8'))
+    return options
 
 ## Testing only
 

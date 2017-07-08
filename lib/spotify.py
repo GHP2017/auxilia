@@ -21,21 +21,17 @@ def get_request(url, call_type='GET', body=None):
         ## TODO:
         # change for different responses; invalid client, malformed request, etc.
         if int(response.status_code) >= 400:
-            print(response.status_code)
-            print(response.text)
             refresh_access_token()
             access_token = cache.get('access_token').decode('utf-8')
             response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'POST':
         response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
-        print(response.text)
         if int(response.status_code) >= 400:
             refresh_access_token()
             access_token = cache.get('access_token').decode('utf-8')
             response = http.post(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
     if call_type is 'PUT':
         response = http.put(url, data=body, headers={'Authorization': 'Bearer ' + access_token})
-        print(response.text, response.status_code)
         if int(response.status_code) >= 400:
             refresh_access_token()
             access_token = cache.get('access_token').decode('utf-8')
@@ -56,7 +52,6 @@ def refresh_access_token():
         'Content-Type': 'application/x-www-form-urlencoded'
     })
     data = response.json()
-    print(response.request.path_url, response.request.headers)
     cache.set('access_token', data['access_token'])
 
 # takes either a track id or a track object as returned by the spotify api
@@ -78,7 +73,6 @@ def create_song(track, explicit=True):
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])
     url = recommendations_uri + songs + '&limit=' + str(num)
-    print(url)
     response = get_request(url)
     data = response.json()
     return [create_song(track_obj, explicit=False).to_dict() for track_obj in data['tracks']]
