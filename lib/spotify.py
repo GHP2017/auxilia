@@ -55,7 +55,7 @@ def refresh_access_token():
     cache.set('access_token', data['access_token'])
 
 # takes either a track id or a track object as returned by the spotify api
-def create_song(track, explicit=True):
+def create_song(track, added_by=None, explicit=True):
     if type(track) is str:
         min_track_id = track[14:]
         response = get_request(track_uri + min_track_id)
@@ -68,7 +68,7 @@ def create_song(track, explicit=True):
     album_uri = data['album']['images'][0]['url']
     album_name = data['album']['name']
     duration = data['duration_ms']
-    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit)
+    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit=explicit, added_by=added_by)
 
 def get_implicit_songs(seeds, num):
     songs = ','.join([song['track_id'] for song in seeds])

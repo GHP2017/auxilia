@@ -49,6 +49,10 @@ socket.on('mid_currently_playing', function (data) {
     update_currently_playing(data, curr_time)
 })
 
+socket.on('synchronize_thumbs', function (data) {
+    console.log(data)
+})
+
 update_currently_playing = function (data, curr_time ) {
     app.curr_album_name = data['album_name']
     app.curr_album_uri = data['album_uri']
@@ -69,6 +73,7 @@ socket.on('resume', function(data) {
 });
 
 submit_song_url = '/add_song?song=spotify:track:'
+thumbs_url = '/thumbs_change'
 
 Vue.use(VueTouch, {name: 'v-touch'})
 
@@ -79,6 +84,8 @@ app = new Vue({
         search: '',
         suggestions: [],
         paused: false,
+        show_error: false,
+        error_message: '',
         curr_album_name: '',
         curr_album_uri: '',
         curr_name: '',
@@ -108,7 +115,13 @@ app = new Vue({
         submit_song: function (track_id) {
             console.log('submitting...')
             $.ajax(submit_song_url + track_id).done(function (data) {
-                console.log('success')
+                data = JSON.parse(data)
+                if (data.error != undefined) {
+                    console.log(data.error)
+                    app.error_message = data.error
+                    app.show_error = true
+                    setTimeout(reset_error, 10000)
+                }
                 app.search = ''
             }).fail(function (data) {
                 console.log('failure')
@@ -119,14 +132,14 @@ app = new Vue({
             console.log('upvote')
             if (song['was_upvoted']) {
                 song['was_upvoted'] = false
-                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: true})
+                $.post(thumbs_url, {track_id: song.track_id, change: 'up', decrement: true})
             }
             else {
                 song['was_upvoted'] = true
-                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: false})
+                $.post(thumbs_url, {track_id: song.track_id, change: 'up', decrement: false})
                 if (song['was_downvoted']) {
                     song['was_downvoted'] = false
-                    socket.emit('thumbs_changed', {track_id: song.track_id, change: 'down', decrement: true})
+                    $.post(thumbs_url, {track_id: song.track_id, change: 'down', decrement: true})
                 }
             }
         },
@@ -135,14 +148,14 @@ app = new Vue({
             console.log('downvote')
             if (song['was_downvoted']) {
                 song['was_downvoted'] = false
-                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'down', decrement: true})
+                $.post(thumbs_url, {track_id: song.track_id, change: 'down', decrement: true})
             }
             else {
                 song['was_downvoted'] = true
-                socket.emit('thumbs_changed', {track_id: song.track_id, change: 'down', decrement: false})
+                $.post(thumbs_url, {track_id: song.track_id, change: 'down', decrement: false})
                 if (song['was_upvoted']) {
                     song['was_upvoted'] = false
-                    socket.emit('thumbs_changed', {track_id: song.track_id, change: 'up', decrement: true})
+                    $.post(thumbs_url, {track_id: song.track_id, change: 'up', decrement: true})
                 }
             }
         },
@@ -158,10 +171,44 @@ app = new Vue({
     }
 });
 
+// init
+$.ajax('/connect').done(function (data) {
+    setTimeout(init_final_setup, 750, data)
+})
 
+init_final_setup = function (data) {
+    console.log(data)
+    data = JSON.parse(data)
+    console.log(data)
+    try { 
+        keys = Object.keys(data)
+        for (i = 0; i < keys.length; i ++) {
+            key = keys[i]
+            console.log(app.queue.length)
+            for (j = 0; j < app.queue.length; j ++) {
+                console.log('iterating..')
+                song = app.queue[j]
+                console.log(song)
+                if (song.track_id == key) {
+                    console.log('matching song')
+                    song.was_upvoted = data[key].was_upvoted
+                    song.was_downvoted = data[key].was_downvoted
+                }
+            }
+        }
+    } catch(err) {
+        // do nothing, data must be empty
+        console.log(err)
+    }
+}
 update_progress_bar = function () {
     if (app.curr_time < app.curr_duration / 1000 && !app.paused) {
         app.curr_time += 1
     }
+}
+
+reset_error = function() {
+    app.show_error = false
+    app.error_message = ''
 }
 setInterval(update_progress_bar, 1000)

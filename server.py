@@ -2,6 +2,7 @@ from flask import Flask, redirect, request, render_template, session
 from flask_socketio import SocketIO, emit
 from lib.Queue import Queue, OptionsConflict
 from lib.Song import Song
+from lib.User import User
 import os
 from datetime import timedelta
 from lib.spotify import get_request, create_song
@@ -11,6 +12,7 @@ from time import time
 import redis as rd
 import ast
 from base64 import b64encode
+from uuid import uuid4
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -57,8 +59,10 @@ def landing():
 def play_page():
     """Returns the play page"""
     session.permanent = True
-    if 'songs_added' not in session:
-        session['songs_added'] = 0
+    if 'tracks' not in session:
+        session['tracks'] = {}
+    if 'id' not in session:
+        session['id'] = uuid4().int
     return app.send_static_file('play.html')
 
 @app.route('/admin')
@@ -71,16 +75,22 @@ def admin():
 @app.route("/add_song")
 def add_song():
     """Creates song object, adds to queue, and updates queue. Returns success upon completion."""
-    options = get_options()
-    if 'songs_added' in session:
-        if session['songs_added'] == 
-        session['songs_added'] += 1
-        print(session)
+    options = queue.instantiate_options()
+    raw_queue = queue.instantiate_queue()
+    num_songs_added = 0
+    for song in raw_queue:
+        if song['added_by'] == session['id']:
+            num_songs_added += 1
+
+    if num_songs_added >= options['max_individual_songs']:
+        print('user reached max songs')
+        return json.dumps({'error': "You are not allowed to add any more songs until one plays"})
+
     track_id = request.args.get('song')
-    song_obj = create_song(track_id)
+    song_obj = create_song(track_id, added_by=session['id'])
     queue.addSong(song_obj)
     queue_change()
-    return 'success'
+    return json.dumps({'success': 'added ' + track_id})
 
 @app.route('/get_next_song')
 def get_next_song():
@@ -93,6 +103,26 @@ def get_next_song():
     except IndexError as e:
         return json.dumps({'error': 'No songs in the queue'})
 
+@app.route('/thumbs_change', methods=['POST'])
+def thumbs_change():
+    print('thumbs change')
+    data = request.form
+    """Changes queue when thumbs up/down."""
+    user = User(session['id'])
+    user.save_thumbs_change(data['track_id'], data['change'])
+    queue.thumbs_change(data['track_id'], data['change'], decrement=(data['decrement'] == 'true'))
+    queue_change()
+    return json.dumps({'success': 'acknowledged the upvote/downvote'})
+
+# uses the session obj to update client side data upon connection
+@app.route('/connect')
+def connect():
+    try:
+        user = User(session['id'])
+        print(user)
+        return json.dumps(user.get_data()['thumbs_tracks'])
+    except AttributeError:
+        return json.dumps({'error': 'no data for this user yet'})
 
 ## Playback
 
@@ -150,12 +180,6 @@ def searchbar_changed(data):
         serialized_songs = [song.to_dict() for song in songs]
         emit('suggestions_changed', serialized_songs)
 
-@socketio.on('thumbs_changed')
-def thumbs_change(data):
-    """Changes queue when thumbs up/down."""
-    queue.thumbs_change(data['track_id'], data['change'], decrement=data['decrement'])
-    queue_change()
-
 def queue_change():
     """Emits queue_changed"""
     socketio.emit('queue_changed', queue.serialize())
@@ -206,12 +230,6 @@ def authenticate():
                     '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
     except Exception as e:
         return ('authenticate() threw ' +str(e))
-
-## Helper methods
-def get_options():
-    serialized_options = self.cache.get('options')
-    options = ast.literal_eval(serialized_options.decode('utf-8'))
-    return options
 
 ## Testing only
 

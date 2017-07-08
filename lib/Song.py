@@ -1,7 +1,7 @@
 class Song:
     # explicit refers to this song being purposefully added by a user,
     # as opposed to by algorithm
-    def __init__(self, name, track_id, artist, album_uri, album_name, duration, explicit=False, valence=None, energy=None):
+    def __init__(self, name, track_id, artist, album_uri, album_name, duration, added_by=None, explicit=False, valence=None, energy=None):
         self.name = name
         self.track_id = track_id
         self.artist = artist
@@ -14,6 +14,7 @@ class Song:
         else:
             self.upvotes = 0
         self.downvotes = 0
+        self.added_by = added_by
         self.age = 0
         self.explicit = explicit
         self.valence = valence
@@ -28,6 +29,7 @@ class Song:
             'album_name': self.album_name,
             'duration': self.duration,
             'score': self.score,
+            'added_by': self.added_by,
             'upvotes': self.upvotes,
             'downvotes': self.downvotes,
             'age': self.age,

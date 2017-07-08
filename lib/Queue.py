@@ -73,7 +73,7 @@ class Queue:
 
     def thumbs_change(self, track_id, change, decrement=False):
         queue = self.instantiate_queue()
-        
+        print(track_id, change, decrement)
         changing_song = None
         for song in queue:
             if song['track_id'] == track_id:
