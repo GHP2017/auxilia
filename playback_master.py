@@ -15,6 +15,7 @@ skip = False
 playback_url = 'http://127.0.0.1:5000/playback?state='
 # called whenever the physical pause/play button is pressed
 def toggle_play_pause():
+    """Pauses or Resumes music from playback master."""
     global playing
     global paused_at
     global pressed_at
@@ -48,6 +49,7 @@ song_url = 'http://127.0.0.1:5000/get_next_song'
 s.play_boot_tone()
 
 def get_next_song():
+    """Gets next song and returns data"""
     try:
         response = http.get(song_url)
     except http.exceptions.ConnectionError:
