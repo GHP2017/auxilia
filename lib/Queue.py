@@ -14,6 +14,8 @@ class Queue:
     def addSong(self, song):
         queue = self.instantiate_queue()
         history = self.instantiate_history()
+        options = self.instantiate_options()
+        max_songs = options
         index = None
         queue = [song for song in queue if song['explicit']]
         queue.append(song.to_dict())
@@ -121,6 +123,13 @@ class Queue:
         history = ast.literal_eval(serialized_history.decode('utf-8'))
         return history
 
+    def instantiate_options(self):
+        serialized_options = self.cache.get('options')
+        options = ast.literal_eval(serialized_options.decode('utf-8'))
+        return options
+
     def serialize(self):
         return self.instantiate_queue()
         
+class OptionsConflict(Exception):
+    pass

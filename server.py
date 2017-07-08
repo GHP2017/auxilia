@@ -1,6 +1,6 @@
 from flask import Flask, redirect, request, render_template, session
 from flask_socketio import SocketIO, emit
-from lib.Queue import Queue
+from lib.Queue import Queue, OptionsConflict
 from lib.Song import Song
 import os
 from datetime import timedelta
@@ -9,6 +9,7 @@ import requests as http
 import json
 from time import time
 import redis as rd
+import ast
 from base64 import b64encode
 
 app = Flask(__name__)
@@ -17,9 +18,15 @@ app.permanent_session_lifetime = timedelta(hours=6)
 
 socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
+options = {
+    'safe_mode': 'False',
+    'downvotes_threshold': 3,
+    'max_individual_songs': 3
+}
 
 cache.set('paused_time', 0)
 cache.set('is_paused', 'False')
+cache.set('options', options)
 cache.set('refresh_token', 'AQBaMZ434eYXxTv8aXProOYllKxIIhT3QmO27-Wrie4EhzD1jZYodny3_G2bc0CMUigTc79ZQ_EK5FNJqImG52tPvu0kO6C13NFTZXUVW2N6pLKAZOlC3g9tWUNL302gkvw')
 
 queue = Queue(cache)
@@ -60,7 +67,9 @@ def admin():
 
 @app.route("/add_song")
 def add_song():
+    options = get_options()
     if 'songs_added' in session:
+        if session['songs_added'] == 
         session['songs_added'] += 1
         print(session)
     track_id = request.args.get('song')
@@ -182,6 +191,12 @@ def authenticate():
                     '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
     except Exception as e:
         return ('authenticate() threw ' +str(e))
+
+## Helper methods
+def get_options():
+    serialized_options = self.cache.get('options')
+    options = ast.literal_eval(serialized_options.decode('utf-8'))
+    return options
 
 ## Testing only
 
