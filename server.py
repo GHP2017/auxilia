@@ -50,10 +50,12 @@ search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
 
 @app.route('/')
 def landing():
+    """Returns the landing page"""
     return app.send_static_file('landing.html')
 
 @app.route('/play')
 def play_page():
+    """Returns the play page"""
     session.permanent = True
     if 'songs_added' not in session:
         session['songs_added'] = 0
@@ -61,12 +63,14 @@ def play_page():
 
 @app.route('/admin')
 def admin():
+    """Returns the admin page."""
     return app.send_static_file('admin.html')
 
 ## Queue
 
 @app.route("/add_song")
 def add_song():
+    """Creates song object, adds to queue, and updates queue. Returns success upon completion."""
     options = get_options()
     if 'songs_added' in session:
         if session['songs_added'] == 
@@ -80,6 +84,7 @@ def add_song():
 
 @app.route('/get_next_song')
 def get_next_song():
+    """Retrieves next song in queue, updates queue, and returns the next song as JSON"""
     try:
         next_song = queue.getSong()
         queue_change()
@@ -93,6 +98,7 @@ def get_next_song():
 
 @app.route('/playback')
 def playback():
+    """changes playback state to paused or resume, and returns acknowlegment"""
     state = request.args.get('state')
     if state == 'paused':
         paused()
@@ -120,6 +126,7 @@ def internal_error(error):
 
 @socketio.on('client_connected')
 def client_connected(data):
+    """When client joins, syncs changes in queue, history and playback."""
     print('a client connected')
     emit('queue_changed', queue.serialize())
     history = queue.instantiate_history()
@@ -132,6 +139,7 @@ def client_connected(data):
 
 @socketio.on('searchbar_changed')
 def searchbar_changed(data):
+    """Searches for user's input in the searchbar, and creates results list"""
     print('searching for ' + data['query'])
     if data['query'] != '':
         query = data['query'].replace(' ', '+')
@@ -144,21 +152,26 @@ def searchbar_changed(data):
 
 @socketio.on('thumbs_changed')
 def thumbs_change(data):
+    """Changes queue when thumbs up/down."""
     queue.thumbs_change(data['track_id'], data['change'], decrement=data['decrement'])
     queue_change()
 
 def queue_change():
+    """Emits queue_changed"""
     socketio.emit('queue_changed', queue.serialize())
     
 def currently_playing_change(song):
+    """Emits a change in the song playing."""
     socketio.emit('currently_playing_changed', song.to_dict())
 
 def paused():
+    """Records time of pause, adjusts cache accordingly, and emits paused signal"""
     pause_time = time()
     cache.set('paused', pause_time)
     socketio.emit('paused', pause_time)
 
 def resume():
+    """Sets is_paused to False, and emits resume signal."""
     cache.set('is_paused', 'False')
     socketio.emit('resume', {})
 
@@ -166,6 +179,7 @@ def resume():
 
 @app.route("/callback")
 def callback():
+    """Returns a redirect to index after posting data, and setting access and refresh tokens."""
     code = request.args.get('code')
     result = http.post(token_uri, data = {
         'grant_type': 'authorization_code',
@@ -186,6 +200,7 @@ def callback():
     
 @app.route("/authenticate")
 def authenticate():
+    """Returns a redirect to authenticate user."""
     try:
         return redirect(authorize_uri + '?client_id=' + client_id + \
                     '&response_type=code&redirect_uri=' + redirect_uri + '&scope=user-library-read user-modify-playback-state')
@@ -202,6 +217,7 @@ def get_options():
 
 @app.after_request
 def add_header(r):
+    """For testing, doesn't store cache."""
     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     r.headers["Pragma"] = "no-cache"
     r.headers["Expires"] = "0"
