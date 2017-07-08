@@ -33,11 +33,11 @@ def toggle_play_pause():
         http.get(playback_url + 'resume')
         playing = True
         pause_time += time.time() - paused_at
-        print("paused for" + str(time.time() - paused_at))
 
 def skip_song():
     global skip
     skip = True
+    s.play_skip_tone()
 
 m = Mouse()
 g = GPIOInteractor()
@@ -45,6 +45,7 @@ s = SoundPlayer()
 g.set_button_callback(toggle_play_pause)
 g.set_button_held_callback(skip_song)
 song_url = 'http://127.0.0.1:5000/get_next_song'
+s.play_boot_tone()
 
 def get_next_song():
     try:
@@ -71,8 +72,8 @@ playing = True
 # main loop
 while True:
     if time.time() - start_time + 3>= duration + pause_time or skip:
-        #if(playing):
-            #toggle_play_pause()
+        if(playing):
+            toggle_play_pause()
         data = get_next_song()
         duration = data['duration'] / 1000.0
         m.play_song(data['track_id'])
