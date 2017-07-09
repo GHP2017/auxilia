@@ -23,7 +23,7 @@ Here's how it works:
 After you search for a song and click "add," the queue automatically updates across all devices and reflects the change.
 Upvoting or downvoting can impact the order of songs that are played, or if a song (added by algorithm) accrues a specified number of downvotes, it will delete itself.
 
-## Built With
+## Dependencies
 * [Flask](http://flask.pocoo.org/) - The web framework used
 * [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/) - Websockets
 * [Spotify Web API](https://developer.spotify.com/web-api/) - Retrieves data from Spotify's catalog

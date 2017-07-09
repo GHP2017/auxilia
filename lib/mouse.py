@@ -7,6 +7,7 @@ class Mouse:
         pass
 
     def play_song(self, track_id):
+        """Moves mouse, and types song name to play song."""
         self.in_transition = True
         os.system("xdotool mousemove 45 260")
         time.sleep(.5)
@@ -24,9 +25,11 @@ class Mouse:
         self.in_transition = False
 
     def pause(self):
+        """Pauses song by pressing space key."""
         os.system("xdotool key KP_Space")
     
     def play(self):
+        """Plays song by pressing space key."""
         os.system("xdotool key KP_Space")
 
         

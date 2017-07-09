@@ -12,6 +12,7 @@ class Queue:
         self.cache.set('history', [])
 
     def addSong(self, song):
+        """Adds song to queue, sorts, adds implicit songs if needed, and sets cache."""
         queue = self.instantiate_queue()
         history = self.instantiate_history()
         options = self.instantiate_options()
@@ -26,6 +27,7 @@ class Queue:
         self.cache.set('queue', queue)
 
     def getSong(self):
+        """Return a Song object, adds implicit songs if needed, ages songs, calculates score, sorts, and sets cache."""
         queue = self.instantiate_queue()
         song_data = queue.pop(0)
 
@@ -49,6 +51,7 @@ class Queue:
         return Song(*args)
 
     def addImplicit(self, queue, history, fallback_song=None):
+        """Adds additional songs to the queue when queue falls below five."""
         song_seeds = []
 
         for song in history:
@@ -71,6 +74,7 @@ class Queue:
         queue.extend(new_songs)
 
     def thumbs_change(self, track_id, change, decrement=False):
+        """Adjusts upvotes/downvotes based on thumbs up or down, recalculates score, and sorts songs."""
         queue = self.instantiate_queue()
         changing_song = None
         for song in queue:
@@ -97,9 +101,11 @@ class Queue:
         self.cache.set('queue', queue)
 
     def sortSongs(self, queue):
+        """Updates song position in queue based on song's score."""
         queue.sort(key = lambda x: x['score'], reverse=True)
 
     def calculateScore(self, queue):
+        """Determines score of each song in the queue for priority."""
         for song in queue:
             if song['explicit']:
                 song['score'] = 3 * song['age'] + 2 * song['upvotes'] - 2 * song['downvotes']
@@ -107,16 +113,19 @@ class Queue:
                 song['score'] = -1 * song['downvotes']
         
     def ageSongs(self, queue):
+        """Increments explicitly added songs's age by one."""
         for song in queue:
             if song['explicit']:
                 song['age'] += 1
 
     def instantiate_queue(self):
+        """Returns queue decoded from utf-8."""
         serialized_queue = self.cache.get('queue')
         queue = ast.literal_eval(serialized_queue.decode('utf-8'))
         return queue
 
     def instantiate_history(self):
+        """Returns history decoded from utf-8"""
         serialized_history = self.cache.get('history')
         history = ast.literal_eval(serialized_history.decode('utf-8'))
         return history
@@ -127,6 +136,7 @@ class Queue:
         return options
 
     def serialize(self):
+        """Returns a decoded queue."""
         return self.instantiate_queue()
         
 class OptionsConflict(Exception):

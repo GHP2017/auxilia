@@ -15,6 +15,7 @@ track_uri = 'https://api.spotify.com/v1/tracks/'
 recommendations_uri = 'https://api.spotify.com/v1/recommendations?seed_tracks='
 
 def get_request(url, call_type='GET', body=None):
+    """Returns response from server to GET, POST, or PUT requests"""
     access_token = cache.get('access_token').decode('utf-8')
     if call_type is 'GET':
         response = http.get(url, headers={'Authorization': 'Bearer ' + access_token})
@@ -41,6 +42,7 @@ def get_request(url, call_type='GET', body=None):
 
 
 def refresh_access_token():
+    """Refreshes access_token in cache."""
     body = {
         'grant_type': 'refresh_token',
         'refresh_token': cache.get('refresh_token').decode('utf-8')
@@ -71,6 +73,7 @@ def create_song(track, added_by=None, explicit=True):
     return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit=explicit, added_by=added_by)
 
 def get_implicit_songs(seeds, num):
+    """Returns implicit songs by calling the Spotify Recommendations API"""
     songs = ','.join([song['track_id'] for song in seeds])
     url = recommendations_uri + songs + '&limit=' + str(num)
     response = get_request(url)
@@ -78,6 +81,7 @@ def get_implicit_songs(seeds, num):
     return [create_song(track_obj, explicit=False).to_dict() for track_obj in data['tracks']]
 
 def get_medians(seeds):
+    """An (unused) method Kai wrote because he thought we needed it. Returns median valence and energy of seeds."""
     median_valence = statistics.median(song['valence'] for song in seeds)
     median_energy = statistics.median(song['energy'] for song in seeds)
     response = '&target_valence=' + median_valence + '&target_energy' + median_energy

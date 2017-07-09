@@ -21,6 +21,7 @@ class Song:
         self.energy = energy
 
     def to_dict(self):
+        """Returns Song args/parameters."""
         return {
             'name': self.name,
             'track_id': self.track_id,
