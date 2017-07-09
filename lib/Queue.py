@@ -15,8 +15,7 @@ class Queue:
         queue = self.instantiate_queue()
         history = self.instantiate_history()
         options = self.instantiate_options()
-        max_songs = options
-        index = None
+
         queue = [song for song in queue if song['explicit']]
         queue.append(song.to_dict())
 
@@ -73,7 +72,6 @@ class Queue:
 
     def thumbs_change(self, track_id, change, decrement=False):
         queue = self.instantiate_queue()
-        print(track_id, change, decrement)
         changing_song = None
         for song in queue:
             if song['track_id'] == track_id:

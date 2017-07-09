@@ -173,11 +173,10 @@ app = new Vue({
 
 // init
 $.ajax('/connect').done(function (data) {
-    setTimeout(init_final_setup, 750, data)
+    setTimeout(init_final_setup, 2000, data)
 })
 
 init_final_setup = function (data) {
-    console.log(data)
     data = JSON.parse(data)
     console.log(data)
     try { 

@@ -22,8 +22,8 @@ socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
 options = {
     'safe_mode': 'False',
-    'downvotes_threshold': 3,
-    'max_individual_songs': 3
+    'downvotes_threshold': '3',
+    'max_individual_songs': '3'
 }
 
 cache.set('paused_time', 0)
@@ -65,10 +65,18 @@ def play_page():
         session['id'] = uuid4().int
     return app.send_static_file('play.html')
 
-@app.route('/admin')
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    """Returns the admin page."""
-    return app.send_static_file('admin.html')
+    if request.method == 'GET':
+        return app.send_static_file('admin.html')
+    else:
+        options = queue.instantiate_options()
+        keys = request.form.keys()
+        for key in keys:
+            options[key] = request.form[key]
+        print(options)
+        cache.set('options', options)
+        return json.dumps({'msg': 'success'})
 
 ## Queue
 
@@ -77,16 +85,21 @@ def add_song():
     """Creates song object, adds to queue, and updates queue. Returns success upon completion."""
     options = queue.instantiate_options()
     raw_queue = queue.instantiate_queue()
+    track_id = request.args.get('song')
+
+    for song in raw_queue:
+        if song['track_id'] == track_id[14:]:
+            return json.dumps({'error': 'Cannot add a song already in the queue'})
+
     num_songs_added = 0
     for song in raw_queue:
         if song['added_by'] == session['id']:
             num_songs_added += 1
 
-    if num_songs_added >= options['max_individual_songs']:
+    if num_songs_added >= int(options['max_individual_songs']):
         print('user reached max songs')
         return json.dumps({'error': "You are not allowed to add any more songs until one plays"})
 
-    track_id = request.args.get('song')
     song_obj = create_song(track_id, added_by=session['id'])
     queue.addSong(song_obj)
     queue_change()
