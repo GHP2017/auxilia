@@ -57,7 +57,7 @@ def refresh_access_token():
     cache.set('access_token', data['access_token'])
 
 # takes either a track id or a track object as returned by the spotify api
-def create_song(track, added_by=None, explicit=True):
+def create_song(track, added_by=None, explicit=True, return_is_explicit=False):
     if type(track) is str:
         min_track_id = track[14:]
         response = get_request(track_uri + min_track_id)
@@ -70,7 +70,12 @@ def create_song(track, added_by=None, explicit=True):
     album_uri = data['album']['images'][0]['url']
     album_name = data['album']['name']
     duration = data['duration_ms']
-    return Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit=explicit, added_by=added_by)
+    is_explicit = data['explicit']
+    song_obj = Song(track_name, track_id, track_artists, album_uri, album_name, duration, explicit=explicit, added_by=added_by)
+    if return_is_explicit:
+        return song_obj, is_explicit
+    else:
+        return song_obj
 
 def get_implicit_songs(seeds, num):
     """Returns implicit songs by calling the Spotify Recommendations API"""

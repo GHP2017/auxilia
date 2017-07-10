@@ -46,7 +46,7 @@ token_uri = 'https://accounts.spotify.com/api/token'
 play_uri = 'https://api.spotify.com/v1/me/player/play'
 pause_uri = 'https://api.spotify.com/v1/me/player/pause'
 track_uri = 'https://api.spotify.com/v1/tracks/'
-search_uri = 'https://api.spotify.com/v1/search?type=track&limit=5&q='
+search_uri = 'https://api.spotify.com/v1/search?type=track&limit=20&q='
 
  ## Main Pages
 
@@ -65,10 +65,16 @@ def play_page():
         session['id'] = uuid4().int
     return app.send_static_file('play.html')
 
-@app.route('/admin', methods=['GET', 'POST'])
+## Admin
+
+@app.route('/admin')
 def admin():
+    return app.send_static_file('admin.html')
+
+@app.route('/options', methods=['GET', 'POST'])
+def options():
     if request.method == 'GET':
-        return app.send_static_file('admin.html')
+        return json.dumps(queue.instantiate_options())
     else:
         options = queue.instantiate_options()
         keys = request.form.keys()
@@ -185,11 +191,24 @@ def searchbar_changed(data):
     """Searches for user's input in the searchbar, and creates results list"""
     print('searching for ' + data['query'])
     if data['query'] != '':
+        options = queue.instantiate_options()
         query = data['query'].replace(' ', '+')
         response = get_request(search_uri + query)
         songs = []
+        is_explicit_list = []
+
         for track_obj in response.json()['tracks']['items']:
-            songs.append(create_song(track_obj))
+            song_obj, is_explicit = create_song(track_obj, return_is_explicit=True)
+            songs.append(song_obj)
+            is_explicit_list.append(is_explicit)
+
+        if options['safe_mode']:
+            temp_songs = []
+            for i in range(len(songs)):
+                if not is_explicit_list[i]:
+                    temp_songs.append(songs[i])
+            songs = temp_songs
+
         serialized_songs = [song.to_dict() for song in songs]
         emit('suggestions_changed', serialized_songs)
 

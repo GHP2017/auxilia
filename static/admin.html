@@ -32,7 +32,7 @@
     </td>
     <td style="padding-top: 5px;">
         <label class="switch">
-          <input type="checkbox">
+          <input v-model="safe_mode" type="checkbox">
           <div class="slider round"></div>
         </label>
         </td></tr></table>
@@ -40,18 +40,24 @@
   <div class="row" style="text-align: center;">
   	<div class="song_info" style="position: relative; top: 50%; transform: translateY(-70%);">
     	Number of downvotes to remove song:
-      <input type="number" placeholder="3" class="query" style="width: 22%; margin-left: 5px; text-align: center;">
+      <input type="number" v-model="max_downvotes" class="query" style="width: 22%; margin-left: 5px; text-align: center;">
     </div>
   </div>
   <div class="row" style="text-align: center;">
   	<div class="song_info" style="position: relative; top: 50%; transform: translateY(-70%);">
     	Max number of individual added songs at a time
-      <input type="number" placeholder="3" class="query" style="width: 22%; margin-left: 5px; text-align: center;">
+      <input type="number" v-model="max_individual_songs" class="query" style="width: 22%; margin-left: 5px; text-align: center;">
     </div>
   </div>
 	</div>
   <a class="nostyle" href="/play"><div class="pointer" style="background-color: #FC2558; border-radius: 21px; height: 42px; width: 200px; color: #f2f2f2; font-size: 24px; text-align: center; line-height: 42px; margin: 0 auto; margin-top: 15px; bottom: 30%;">Go to Queue</div></a>
   </div>
-  
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+	</script>
+  <script type="text/javascript" src="static/js/vue.js"></script>
+  <script type="text/javascript" src="static/js/admin.js"></script>
 </body>
 </html>
