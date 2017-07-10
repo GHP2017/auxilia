@@ -192,6 +192,7 @@ def searchbar_changed(data):
     print('searching for ' + data['query'])
     if data['query'] != '':
         options = queue.instantiate_options()
+        print(options)
         query = data['query'].replace(' ', '+')
         response = get_request(search_uri + query)
         songs = []
@@ -201,13 +202,17 @@ def searchbar_changed(data):
             song_obj, is_explicit = create_song(track_obj, return_is_explicit=True)
             songs.append(song_obj)
             is_explicit_list.append(is_explicit)
-
-        if options['safe_mode']:
+        
+        if options['safe_mode'] == 'True':
+            print('safe mode???')
             temp_songs = []
             for i in range(len(songs)):
                 if not is_explicit_list[i]:
                     temp_songs.append(songs[i])
             songs = temp_songs
+
+        if len(songs) > 5:
+            songs = songs[:5]
 
         serialized_songs = [song.to_dict() for song in songs]
         emit('suggestions_changed', serialized_songs)
