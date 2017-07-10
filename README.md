@@ -14,9 +14,8 @@ A server that runs on a Raspberry Pi enabling several users to enjoy a shared mu
 These instructions will walk you through the steps needed to begin the experience.
 
 ### Setup
-Let's connect speaker's Raspberry Pi to the same network as the users' devices. 
-The Raspberry Pi will host the server running the Auxilia web app, so you'll need to go to this address:
-*coming soon*
+Connect the speaker's Raspberry Pi to the same network as the users' devices.
+The Raspberry Pi will host the server running the Auxilia web app, so you'll need to set up the server by 
 
 ### Having a Good Time
 Here's how it works:
@@ -28,6 +27,7 @@ Upvoting or downvoting can impact the order of songs that are played, or if a so
 * [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/) - Websockets
 * [Spotify Web API](https://developer.spotify.com/web-api/) - Retrieves data from Spotify's catalog
 * [Requests](http://docs.python-requests.org/en/latest/index.html) - HTTP for Humans
+* [Redis](https://redis.io/) - Database and Cache
 
 ## Our Team
 
