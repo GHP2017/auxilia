@@ -3,6 +3,7 @@ import time
 class GPIOInteractor:
     
     def button_state_changed(self, channel):
+        print(GPIO.input(18))
         if(not GPIO.input(18)):
             self.button_pressed()
         else:
@@ -27,7 +28,7 @@ class GPIOInteractor:
         
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(18, GPIO.BOTH, callback=self.button_state_changed,bouncetime=50)        
+        GPIO.add_event_detect(18, GPIO.BOTH, callback=self.button_state_changed,bouncetime=200)        
         
     def set_button_callback(self, funct):
         self.button_callback = funct
