@@ -203,7 +203,7 @@ def searchbar_changed(data):
             songs.append(song_obj)
             is_explicit_list.append(is_explicit)
         
-        if options['safe_mode'] == 'True':
+        if options['safe_mode'] == 'true':
             print('safe mode???')
             temp_songs = []
             for i in range(len(songs)):
