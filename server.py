@@ -22,7 +22,7 @@ socketio = SocketIO(app)
 cache = rd.StrictRedis(host='localhost', port=6379, db=0)
 options = {
     'safe_mode': 'False',
-    'downvotes_threshold': '3',
+    'votes_threshold': '3',
     'max_individual_songs': '3'
 }
 
@@ -138,7 +138,6 @@ def thumbs_change():
 def connect():
     try:
         user = User(session['id'])
-        print(user)
         return json.dumps(user.get_data()['thumbs_tracks'])
     except AttributeError:
         return json.dumps({'error': 'no data for this user yet'})
@@ -192,7 +191,6 @@ def searchbar_changed(data):
     print('searching for ' + data['query'])
     if data['query'] != '':
         options = queue.instantiate_options()
-        print(options)
         query = data['query'].replace(' ', '+')
         response = get_request(search_uri + query)
         songs = []
@@ -204,7 +202,6 @@ def searchbar_changed(data):
             is_explicit_list.append(is_explicit)
         
         if options['safe_mode'] == 'true':
-            print('safe mode???')
             temp_songs = []
             for i in range(len(songs)):
                 if not is_explicit_list[i]:

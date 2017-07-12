@@ -23,7 +23,7 @@ class Queue:
         if len(queue) < 5:
             self.addImplicit(queue, history, fallback_song=song.to_dict())
         
-        self.sortSongs(queue)
+        queue = self.sortSongs(queue)
         self.cache.set('queue', queue)
 
     def getSong(self):
@@ -41,7 +41,7 @@ class Queue:
         
         self.ageSongs(queue)
         self.calculateScore(queue)
-        self.sortSongs(queue)
+        queue = self.sortSongs(queue)
 
         self.cache.set('queue', queue)
         self.cache.set('history', history)
@@ -96,13 +96,25 @@ class Queue:
                 changing_song['downvotes'] += 1
 
         self.calculateScore(queue)
-        self.sortSongs(queue)
+        queue = self.sortSongs(queue)
+        
+        if len(queue) < 5:
+            history = self.instantiate_history()
+            self.addImplicit(queue, history)
 
         self.cache.set('queue', queue)
 
     def sortSongs(self, queue):
         """Updates song position in queue based on song's score."""
-        queue.sort(key = lambda x: x['score'], reverse=True)
+        options = self.instantiate_options()
+        temp_queue = []
+        
+        for song in queue:
+            if song['downvotes'] - song['upvotes'] < int(options['votes_threshold']):
+                temp_queue.append(song)
+        
+        temp_queue.sort(key = lambda x: x['score'], reverse=True)
+        return temp_queue
 
     def calculateScore(self, queue):
         """Determines score of each song in the queue for priority."""
