@@ -14,8 +14,7 @@ A server that runs on a Raspberry Pi enabling several users to enjoy a shared mu
 These instructions will walk you through the steps needed to begin the experience.
 
 ### Setup
-Connect the speaker's Raspberry Pi to the same network as the users' devices.
-The Raspberry Pi will host the server running the Auxilia web app, so you'll need to set up the server by going to the Pi's IP address on the network.
+The Raspberry Pi will host the server running the Auxilia web app, so you'll need to set up the server, and users should go to the Pi's IP address on the local network.
 
 ### Having a Good Time
 Here's how it works:
