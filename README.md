@@ -15,12 +15,15 @@ These instructions will walk you through the steps needed to begin the experienc
 
 ### Setup
 Connect the speaker's Raspberry Pi to the same network as the users' devices.
-The Raspberry Pi will host the server running the Auxilia web app, so you'll need to set up the server by 
+The Raspberry Pi will host the server running the Auxilia web app, so you'll need to set up the server by going to the Pi's IP address on the network.
 
 ### Having a Good Time
 Here's how it works:
 After you search for a song and click "add," the queue automatically updates across all devices and reflects the change.
-Upvoting or downvoting can impact the order of songs that are played, or if a song (added by algorithm) accrues a specified number of downvotes, it will delete itself.
+Upvoting or downvoting can impact the order of songs that are played, or if a song (added by algorithm) accrues enough downvotes, it will delete itself.
+
+### Admin Page
+The admin page allows a user to toggle "safe mode" - to allow or prohibit songs with content warnings, set the number of downvotes needed to remove a song from the queue, and the maximum number of songs any one user can request.
 
 ## Dependencies
 * [Flask](http://flask.pocoo.org/) - The web framework used
@@ -30,6 +33,11 @@ Upvoting or downvoting can impact the order of songs that are played, or if a so
 * [Redis](https://redis.io/) - Database and Cache
 
 ## Our Team
+* @chaseWilliams
+* @kaimckeever
+* @DrewCutch
+* @arvinpoddar
+* @Nicksh1
 
 ## License
 
